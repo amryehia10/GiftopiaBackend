@@ -17,6 +17,6 @@ database.connection.on("open", () => {
 database.connection.on("error", () => { console.log("Error Happened") })
 
 
-app.use("/api/cart",cartRoute);
+app.use("/cart",cartRoute);
 
 app.listen(port, () => console.log(`Running on: http://localhost:${port}`))

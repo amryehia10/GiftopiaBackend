@@ -1,4 +1,4 @@
-const Ajv = require("ajv");
+const Ajv = require("../../packages/node_modules/ajv");
 const ajv = new Ajv();
 
 const wishlistSchema = {
