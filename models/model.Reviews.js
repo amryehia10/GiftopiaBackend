@@ -1,4 +1,4 @@
-const mongoose = require('../packages/node_modules/mongoose');
+const mongoose = require('../packages/node_modules/mongoose/types');
 
 let reviewSchema = new mongoose.Schema( {
     userId: String,
