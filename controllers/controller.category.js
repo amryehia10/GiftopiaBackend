@@ -1,2 +1,10 @@
-const Category = require("../model/user/model.user");
-const validator = require("../model/user/validator.user");
+const model = require("../models/model.category");
+const validator = require("../model/user/validator.product");
+
+
+
+
+
+module.exports = {
+    
+}
