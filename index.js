@@ -1,5 +1,6 @@
 const database = require("./utiles/handler.database");
 const express = require("./packages/node_modules/express");
+const cartRoute = require("./routes/route.cart");
 
 const port = process.env.port || 7050;
 const app = express()
@@ -14,5 +15,8 @@ database.connection.on("open", () => {
 });
 
 database.connection.on("error", () => { console.log("Error Happened") })
+
+
+app.use("/api/cart",cartRoute);
 
 app.listen(port, () => console.log(`Running on: http://localhost:${port}`))

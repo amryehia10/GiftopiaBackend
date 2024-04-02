@@ -1,4 +1,4 @@
-const mongoose = require('../packages/node_modules/mongoose');
+const mongoose = require('../utiles/handler.database');
 
 let cartSchema = new mongoose.Schema( {
     userId: String,
