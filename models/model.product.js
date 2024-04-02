@@ -2,7 +2,7 @@ const mongoose = require('../packages/node_modules/mongoose');
 
 let productSchema = new mongoose.Schema( {
     name: String,
-    img: [{
+    images: [{
         type: String
     }],
     cat:[{

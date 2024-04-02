@@ -13,7 +13,7 @@ let userSchema = new mongoose.Schema( {
         type: String
     }],
     gender: String,
-    userType: String,
+    userType: String
 }) 
 
 module.exports = mongoose.model('Users', userSchema)
