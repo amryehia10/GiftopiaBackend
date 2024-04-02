@@ -1,3 +1,7 @@
+* create files with lower case
+
+=====================================================
+
     /*To install Required Modules*/
 1- move to packages folder ==> cd packages
 2- install needed modules ==> npm i
