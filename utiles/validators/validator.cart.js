@@ -8,9 +8,15 @@ const Schema = {
     productId: {
       type: "array",
       items: { type: "string" }
-    }
+    },
+    quantity: {
+      type: "array",
+      items:  { type: "string" }
+    },
+    total: {type: "number"}
+
   },
-  required: ["userId", "productId"],
+  required: ["userId", "productId", "quantity", "total"],
   additionalProperties: false
 };
 
