@@ -1,5 +1,5 @@
-const model = require("../models/model.contact");
-const validator = require("../utiles/validators/validator.contact");
+const model = require("../models/model.ticket");
+const validator = require("../utiles/validators/validator.ticket");
 
 let getAllTickets = async (req, res) => {
     try {

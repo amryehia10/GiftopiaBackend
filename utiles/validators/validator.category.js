@@ -4,11 +4,10 @@ const ajv = new Ajv();
 const Schema = {
   type: "object",
   properties: {
-    _id: { type: "string" },
-    categoryName: { type: "string" },
-    categoryImage: { type: "string" },
+    name: { type: "string" },
+    image: { type: "string" },
   },
-  required: ["categoryName", "categoryImage"],
+  required: ["name", "image"],
   additionalProperties: false,
 };
 

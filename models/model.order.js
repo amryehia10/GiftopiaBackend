@@ -6,6 +6,6 @@ let Schema = new database.Schema( {
     status: String,
     paymentMethod: String,
     address: String
-}) 
+},{ _id: true }) 
 
 module.exports = database.model('Orders', Schema)

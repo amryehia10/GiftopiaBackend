@@ -5,6 +5,6 @@ let Schema = new database.Schema( {
     productId:[{
         type: String
     }]
-}) 
+},{ _id: true }) 
 
 module.exports = database.model('WishList', Schema)

@@ -1,6 +1,6 @@
 const express = require('../packages/node_modules/express');
 const router = express.Router();
-const controller = require("../controllers/controller.contact");
+const controller = require("../controllers/controller.ticket");
 
 
 router.get("/", controller.getAllTickets);

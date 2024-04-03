@@ -6,10 +6,10 @@ const Schema = {
   properties: {
     userId: { type: "string" },
     productId: { type: "string" },
-    ReviewText: { type: "string" },
+    Comment: { type: "string" },
     rate: { type: "number" }
   },
-  required: ["userId", "productId", "ReviewText", "rate"],
+  required: ["userId", "productId", "Comment", "rate"],
   additionalProperties: false 
 };
 

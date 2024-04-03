@@ -7,6 +7,6 @@ let Schema = new database.Schema( {
     }],
     quantity: [{type: Number}],
     total: Number
-}) 
+},{ _id: true }) 
 
 module.exports = database.model('Cart', Schema)

@@ -15,7 +15,6 @@ let getAllProducts = async (req, res) => {
 
 let getProductByID = async (req, res) => {
     try {
-        console.log(req.params);
         let result = await model.findOne({ "_id": req.params.id });
         result ?
             res.status(200).json({ status: "success", data: result })
@@ -25,7 +24,7 @@ let getProductByID = async (req, res) => {
     }
 }
 
-let getProductByCategory = async (req, res) => {
+let getProductsByCategory = async (req, res) => {
     try {
         let result = await model.find({ "cat": { "$in": [req.params.id] } });
         result.length > 0 ?
@@ -36,8 +35,67 @@ let getProductByCategory = async (req, res) => {
     }
 }
 
+let addNewProduct = async (req, res) => {
+    try {
+        let args = req.body;
+        if (validator(args)) {
+            let prd = new model(args)
+            prd.save();
+            res.status(200).json({ status: "success", message: "Ticket is added successfully" });
+        }
+        else {
+            res.status(404).json({ status: "fail", message: validator.errors[0].message });
+        }
+    } catch (error) {
+        res.status(404).json({ status: "fail", error: error.message })
+    }
+}
+
+let updateProduct = async (req, res) => {
+
+    try {
+        let prd = req.body;
+        if (validator(args)) {
+            let result = await model
+                .findOneAndUpdate(
+                    { id: prd.id },
+                    {
+                        cat: prd.cat, name: prd.name, desc: prd.desc,
+                        star: prd.star, price: prd.price, images: prd.images,
+                        discount: prd.discount, numberOfRates: prd.numberOfRates,
+                        numberOfSellings: prd.numberOfSellings, quantity: prd.quantity,
+                    },
+                    { new: true }
+                );
+            console.log(result);
+            result ?
+                res.json({ status: "success", msg: "Product is updated successfully", data: result })
+                : res.json({ status: "failed", msg: `No Product found with this id: ${prd.id}` });
+        } else {
+            res.status(404).json({ status: "fail", message: validator.errors[0].message });
+        }
+    } catch (error) {
+        res.status(404).json({ status: "fail", error: error.message })
+    }
+}
+
+let deleteProduct = async (req, res) => {
+    try {
+        let prd = await model.deleteOne({ "_id": req.params.id })
+        prd.deletedCount ?
+            res.status(200).json({ status: "success", message: "Product is deleted successfully", data: prd })
+            : res.json({ status: "failed", msg: `No ticket found with id: ${req.params.id}` });
+    } catch (error) {
+        res.status(404).json({ status: "fail", error: error.message })
+    }
+}
+
+
 module.exports = {
+    addNewProduct,
+    deleteProduct,
+    updateProduct,
     getAllProducts,
     getProductByID,
-    getProductByCategory
+    getProductsByCategory
 }

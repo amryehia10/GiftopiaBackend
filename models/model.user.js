@@ -14,6 +14,6 @@ let Schema = new database.Schema( {
     }],
     gender: String,
     userType: String
-}) 
+},{ _id: true }) 
 
 module.exports = database.model('Users', Schema)

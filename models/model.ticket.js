@@ -1,9 +1,9 @@
 const database = require('../utiles/handler.database');
 
 let Schema = new database.Schema( {
-    userName: String,
-    userEmail: String,
+    name: String,
+    email: String,
     message: String
-}) 
+},{ _id: true }) 
 
-module.exports = database.model('contact-us', Schema)
+module.exports = database.model('tickets', Schema)
