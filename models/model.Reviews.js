@@ -1,10 +1,10 @@
-const mongoose = require('../packages/node_modules/mongoose/types');
+const database = require('../utiles/handler.database');
 
-let reviewSchema = new mongoose.Schema( {
+let Schema = new database.Schema( {
     userId: String,
     productId: String,
     ReviewText: String,
     rate: Number
 }) 
 
-module.exports = mongoose.model('Reviews', reviewSchema)
+module.exports = database.model('Reviews', Schema)

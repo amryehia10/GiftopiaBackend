@@ -7,10 +7,12 @@ const app = express();
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
+
 database.connection.on("open", () => {
-    // app.use("/cart",Routes.CartRoute);
+    console.log("Open");
+    app.use("/cart",Routes.CartRoute);
     app.use("/product", Routes.ProductRoute);
-    app.use("/category", Routes.CategoryRoute);
+    // app.use("/category", Routes.CategoryRoute);
     
 });
 

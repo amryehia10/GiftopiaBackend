@@ -1,10 +1,10 @@
-const mongoose = require('../packages/node_modules/mongoose');
+const database = require('../utiles/handler.database');
 
-let wishlistSchema = new mongoose.Schema( {
+let Schema = new database.Schema( {
     userId: String,
     productId:[{
         type: String
     }]
 }) 
 
-module.exports = mongoose.model('WishList', wishlistSchema)
+module.exports = database.model('WishList', Schema)

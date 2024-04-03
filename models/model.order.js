@@ -1,6 +1,6 @@
-const mongoose = require('../packages/node_modules/mongoose');
+const database = require('../utiles/handler.database');
 
-let orderSchema = new mongoose.Schema( {
+let Schema = new database.Schema( {
     userId: String,
     cartId: String,
     status: String,
@@ -8,4 +8,4 @@ let orderSchema = new mongoose.Schema( {
     address: String
 }) 
 
-module.exports = mongoose.model('Orders', orderSchema)
+module.exports = database.model('Orders', Schema)

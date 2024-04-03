@@ -1,9 +1,9 @@
-const mongoose = require('../packages/node_modules/mongoose');
+const database = require('../utiles/handler.database');
 
-let shippingSchema = new mongoose.Schema( {
+let Schema = new database.Schema( {
     userId: String,
     orderId: String,
     status: String,
 }) 
 
-module.exports = mongoose.model('Shipping', shippingSchema)
+module.exports = database.model('Shipping', Schema)

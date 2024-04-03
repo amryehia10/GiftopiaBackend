@@ -1,6 +1,6 @@
-const mongoose = require('../packages/node_modules/mongoose');
+const database = require('../utiles/handler.database');
 
-let userSchema = new mongoose.Schema( {
+let Schema = new database.Schema( {
     name: String,
     image: String,
     address:[{
@@ -16,4 +16,4 @@ let userSchema = new mongoose.Schema( {
     userType: String
 }) 
 
-module.exports = mongoose.model('Users', userSchema)
+module.exports = database.model('Users', Schema)
