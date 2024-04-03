@@ -1,7 +1,7 @@
 const Ajv = require("../../packages/node_modules/ajv");
 const ajv = new Ajv(); 
 
-const productSchema = {
+const Schema = {
   type: "object",
   properties: {
     name: { type: "string" },
@@ -25,4 +25,4 @@ const productSchema = {
   additionalProperties: false 
 };
 
-module.exports = ajv.compile(productSchema);
+module.exports = ajv.compile(Schema);

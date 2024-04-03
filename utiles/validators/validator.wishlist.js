@@ -1,7 +1,7 @@
 const Ajv = require("../../packages/node_modules/ajv");
 const ajv = new Ajv();
 
-const wishlistSchema = {
+const Schema = {
   type: "object",
   properties: {
     userId: { type: "string" },
@@ -14,4 +14,4 @@ const wishlistSchema = {
   additionalProperties: false 
 };
 
-module.exports = ajv.compile(wishlistSchema);
+module.exports = ajv.compile(Schema);

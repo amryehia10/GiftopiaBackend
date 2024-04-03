@@ -4,7 +4,7 @@ const controller = require("../controllers/controller.product");
 
 
 router.get("/", controller.getAllProducts);
-// router.get("/:id", controller.getProductById);
+router.get("/:id", controller.getProductByID);
 router.get("/category/:id", controller.getProductByCategory);
 
 // router.post("/:id", controller.addNewProduct);

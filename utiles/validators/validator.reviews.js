@@ -1,7 +1,7 @@
 const Ajv = require("../../packages/node_modules/ajv");
 const ajv = new Ajv();
 
-const reviewSchema = {
+const Schema = {
   type: "object",
   properties: {
     userId: { type: "string" },
@@ -13,4 +13,4 @@ const reviewSchema = {
   additionalProperties: false 
 };
 
-module.exports = ajv.compile(reviewSchema);
+module.exports = ajv.compile(Schema);

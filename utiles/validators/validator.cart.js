@@ -1,7 +1,7 @@
 const Ajv = require("../../packages/node_modules/ajv");
 const ajv = new Ajv();
 
-const cartSchema = {
+const Schema = {
   type: "object",
   properties: {
     userId: { type: "string" },
@@ -14,4 +14,4 @@ const cartSchema = {
   additionalProperties: false
 };
 
-module.exports = ajv.compile(cartSchema);
+module.exports = ajv.compile(Schema);

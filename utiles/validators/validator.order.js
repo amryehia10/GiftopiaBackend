@@ -1,7 +1,7 @@
 const Ajv = require("../../packages/node_modules/ajv");
 const ajv = new Ajv();
 
-const orderSchema = {
+const Schema = {
   type: "object",
   properties: {
     userId: { type: "string" },
@@ -14,5 +14,5 @@ const orderSchema = {
   additionalProperties: false,
 };
 
-module.exports = ajv.compile(orderSchema);
+module.exports = ajv.compile(Schema);
 
