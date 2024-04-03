@@ -6,7 +6,7 @@
 1- move to packages folder ==> cd packages
 2- install needed modules ==> npm i
 
-Packages Used ==> {Express, Mongoose, AJV, bcrypt, JWT}
+Packages Used ==> {Express, Mongoose, AJV, bcrypt, JWT, Cors}
 =====================================================
 
     /*To Run Node Server*/
