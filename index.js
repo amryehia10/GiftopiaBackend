@@ -12,6 +12,7 @@ database.connection.on("open", () => {
     console.log("Open");
     app.use("/cart",Routes.CartRoute);
     app.use("/product", Routes.ProductRoute);
+    app.use("/contact", Routes.ContactRoute);
     // app.use("/category", Routes.CategoryRoute);
     
 });

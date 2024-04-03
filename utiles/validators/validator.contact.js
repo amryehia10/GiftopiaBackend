@@ -1,14 +1,14 @@
 const Ajv = require("../../packages/node_modules/ajv");
-const ajv = new Ajv(); 
+const ajv = new Ajv();
 
 const Schema = {
   type: "object",
   properties: {
-    name:{type:"string",pattern:"^[a-zA-Z]*$"},
-    email: { type: "string", pattern:"^[a-zA-Z0-9]@[a-zA-Z]{4,}\.[a-zA-Z]{3,}*$"},
+    userName: { type: "string", pattern: "^[a-zA-Z]*$" },
+    userEmail: { type: "string", pattern: "^[a-zA-Z0-9]+@[a-zA-Z]+\\.[a-zA-Z]{2,}$" },
     message: { type: "string" },
   },
-  required: ["name", "email", "message"],
+  required: ["userName", "userEmail", "message"],
   additionalProperties: false,
 };
 
