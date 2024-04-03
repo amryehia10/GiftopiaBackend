@@ -26,6 +26,7 @@ let getUserTickets = async (req, res) => {
 let addNewTicket = async (req, res) => {
     try {
         let args = req.body;
+        console.log(args);
         if (validator(args)) {
             let ticket = new model(args)
             ticket.save();
