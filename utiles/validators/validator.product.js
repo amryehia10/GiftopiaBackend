@@ -19,9 +19,10 @@ const Schema = {
     quantity: { type: "number" },
     discount: { type: "number" },
     numberOfSellings: { type: "number" },
-    numberOfRates: { type: "number" }
+    numberOfRates: { type: "number" },
+    createdAt: {type: "string"}
   },
-  required: ["name", "images", "cat", "desc", "star", "price", "quantity", "discount", "numberOfSellings", "numberOfRates"],
+  required: ["name", "images", "cat", "desc", "star", "price", "quantity", "discount", "numberOfSellings", "numberOfRates", "createdAt"],
   additionalProperties: false 
 };
 

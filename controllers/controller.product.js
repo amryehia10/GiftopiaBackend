@@ -64,6 +64,7 @@ let updateProduct = async (req, res) => {
                         star: prd.star, price: prd.price, images: prd.images,
                         discount: prd.discount, numberOfRates: prd.numberOfRates,
                         numberOfSellings: prd.numberOfSellings, quantity: prd.quantity,
+                        createdAt: prd.createdAt
                     },
                     { new: true }
                 );

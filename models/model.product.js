@@ -14,7 +14,8 @@ let Schema = new database.Schema( {
     quantity: Number,
     discount: Number,
     numberOfSellings: Number,
-    numberOfRates: Number
+    numberOfRates: Number,
+    createdAt: String
 },{ _id: true }) 
 
 module.exports = database.model('products', Schema)
