@@ -11,7 +11,7 @@ const Schema = {
     },
     quantity: {
       type: "array",
-      items:  { type: "string" }
+      items:  { type: "number" }
     },
     total: {type: "number"}
 

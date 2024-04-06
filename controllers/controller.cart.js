@@ -3,83 +3,79 @@ const product = require("../models/model.product");
 const validator = require("../utiles/validators/validator.cart");
 
 let getAllAtCartByUserId = async (req, res) => {
-    let userId = req.params.userId;
-    let cartData = await cart.find({ userId: userId });
+    const userId = req.params.userId;
+    const cartData = await cart.find({ userId: userId });
     if (cartData) {
         return res.status(200).json({ data: cartData });
     } else
-        return res.status(404).json({ message: "User not found to display the cart" });
+        return res.status(404).json({ message: "User was not found to display the cart" });
 
 }
 
-// let getCartById = async (req,res) => {
-//     let cartId = req.params.id;
-//     let cartData = await cart.findOne({_id: cartId});
-//     if(cartData)
-//         res.status(200).json({data: cartData});
-//     else
-//         res.status(404).json({message:"Cart not found"});
-
-// }
-
-//TODO -> the front should send the cart without the deleted product, even if there isn't products, every user has his cart,
-//TODO -> cart is deleted when user is deleted
-//TODO -> make deleteCart and check if user exists
-
-let updateCart = async (req, res) => {
-    let cartId = req.params.id;
-    if (validator(req.body)) {
-        let cart = await cart.updateOne({ _id: cartId }, { userId: req.body.userId, productId: req.body.productId });
-        if (cart)
-            res.status(201).json({ message: "Updated Successfully", data: cart });
+let deleteProductAtCart = async (req, res) => {
+    const userId = req.params.userId;
+    const productId = req.body.productId;
+    console.log(productId)
+    const isProductFound = await product.findOne({ _id: productId });
+    if (isProductFound) {
+        const cartData = await cart.findOne({ userId: userId });
+        const productIndexFound = cartData.productId.indexOf(productId);
+        if (productIndexFound !== -1) {
+            const prdTotal = isProductFound.price *  cartData.quantity[productIndexFound];
+            cartData.total -=  prdTotal;
+            cartData.productId.splice(productIndexFound, 1);
+            cartData.quantity.splice(productIndexFound, 1);
+        }else {
+            return res.status(404).json({ message: "Product was not found in the cart" });
+        }
+        const newCart = await cart.updateOne({ _id: cartData._id }, cartData);
+        if (newCart)
+            res.status(201).json({ message: "Product was removed Successfully"});
         else
-            res.status(404).json({ message: "Cart not found" });
+            res.status(404).json({ message: "There is error in removing the product" });
     } else {
-        res.status(404).json({ message: validator.errors[0].message });
+        res.status(404).json({ message: "Product was not found in database"});
     }
-
 }
 
-//TODO => maybe will be updated
 let addToCart = async (req, res) => {
-    let productId = req.body.productId;
+    const productId = req.body.productId;
     if (validator(req.body)) {
-        let isProductFound = await product.findOne({ _id: productId[0] });
+        const isProductFound = await product.findOne({ _id: productId[0] });
         if (!isProductFound) {
             return res.status(500).json({
                 type: "Not Found",
                 msg: "Invalid request"
             })
         } else {
-            let userId = req.params.userId;
-            let quantity = req.body.quantity;
-            let total = req.body.total;
-            let cartData = await cart.find({ userId: userId });
+            const userId = req.params.userId;
+            const quantity = req.body.quantity;
+            const total = req.body.total;
+            const cartData = await cart.findOne({ userId: userId });
             if (cartData) {
-                const productIndexFound = cartData[0].productId.indexOf(productId);
+                const productIndexFound = cartData.productId.indexOf(productId);
 
                 //product found in cart
                 if (productIndexFound !== -1) {
-                    cartData[0].quantity += quantity;
-                    cartData[0].total += total;
+                    cartData.quantity[productIndexFound] += quantity[0];
+                    cartData.total += total;
                 } else {
-                    cartData[0].productId.push(productId);
+                    cartData.productId.push(productId[0]);
+                    cartData.quantity.push(quantity[0]);
+                    cartData.total += total;
                 }
+
+                const newCart = await cart.updateOne({ _id: cartData._id }, cartData);
+
+                if (cart)
+                    return res.status(201).json({ message: "Product added to cart Successfully", data: newCart });
+                else
+                    return res.status(404).json({ message: "Error adding to cart" });
+
             } else {
-                return res.status(404).json({ message: "Error adding in cart" });
+                return res.status(404).json({ message: "Error adding to cart" });
             }
         }
-        // console.log(isCartFound.productId)
-        // let cart = await cart.updateOne({_id:cartId}, {userId:req.body.userId, productId: req.body.productId.push(isCartFound.productId)});
-        // if(cart)
-        //     res.status(201).json({message:"Product is added Successfully", data:cart});
-        // else 
-        //     res.status(404).json({message:"Error adding in cart"});
-        //     } else {
-        //         let newCart = new cart(req.body);
-        //         newCart.save()
-        //         res.status(201).json({message:"Product is added Successfully", data:newCart})
-        //     }
     } else {
         res.status(404).json({ message: validator.errors[0].message });
     }
@@ -87,7 +83,6 @@ let addToCart = async (req, res) => {
 
 module.exports = {
     getAllAtCartByUserId,
-    // getCartById,
-    updateCart,
+    deleteProductAtCart,
     addToCart
 };
