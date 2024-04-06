@@ -13,11 +13,12 @@ app.use(express.urlencoded({ extended: true }));
 database.connection.on("open", () => {
     console.log("Open");
     app.use("/cart",Routes.CartRoute);
+    app.use("/user", Routes.UserRoute);
+    app.use("/order",Routes.OrderRoute);
+    app.use("/review", Routes.ReviewRoute);
     app.use("/product", Routes.ProductRoute);
     app.use("/contact", Routes.ContactRoute);
     app.use("/category", Routes.CategoryRoute);
-    app.use("/review", Routes.ReviewRoute);
-    app.use("/user", Routes.UserRoute);
 
 
     

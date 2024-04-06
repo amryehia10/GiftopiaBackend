@@ -6,7 +6,7 @@ let getAllProducts = async (req, res) => {
     try {
         const result = await model.find({});
         result ?
-            res.status(200).json({ status: "success", data: result })
+            res.status(200).json({ status: "success", length: result.length, data: result })
             : res.status(200).json({ status: "success", message: "No Products Found" });
     } catch (error) {
         res.status(404).json({ status: "fail", error: error })
@@ -23,6 +23,39 @@ let getProductByID = async (req, res) => {
         res.status(404).json({ status: "fail", error: error })
     }
 }
+let getOldProducts = async (req, res) => {
+    try {
+        let arrivalDate = new Date();
+        arrivalDate.setDate(arrivalDate.getDate() - 14);
+        let result = await model.find({
+            createdAt: {
+                $lte: arrivalDate.toISOString()
+            }
+        });
+        result ?
+            res.status(200).json({ status: "success", length: result.length, data: result })
+            : res.status(200).json({ status: "success", message: "No Products Found" });
+    } catch (error) {
+        res.status(404).json({ status: "fail", error: error })
+    }
+}
+let getNewArrivalProducts = async (req, res) => {
+    try {
+        let arrivalDate = new Date();
+        arrivalDate.setDate(arrivalDate.getDate() - 14);
+        let result = await model.find({
+            createdAt: {
+                $gte: arrivalDate.toISOString(),
+                $lte: new Date().toISOString()
+            }
+        });
+        result ?
+            res.status(200).json({ status: "success", length: result.length, data: result })
+            : res.status(200).json({ status: "success", message: "No Products Found" });
+    } catch (error) {
+        res.status(404).json({ status: "fail", error: error })
+    }
+}
 
 let getProductsByCategory = async (req, res) => {
     try {
@@ -34,6 +67,8 @@ let getProductsByCategory = async (req, res) => {
         res.status(404).json({ status: "fail", error: error.message })
     }
 }
+
+
 
 let addNewProduct = async (req, res) => {
     try {
@@ -64,7 +99,6 @@ let updateProduct = async (req, res) => {
                         star: prd.star, price: prd.price, images: prd.images,
                         discount: prd.discount, numberOfRates: prd.numberOfRates,
                         numberOfSellings: prd.numberOfSellings, quantity: prd.quantity,
-                        createdAt: prd.createdAt
                     },
                     { new: true }
                 );
@@ -98,5 +132,7 @@ module.exports = {
     updateProduct,
     getAllProducts,
     getProductByID,
-    getProductsByCategory
+    getOldProducts,
+    getProductsByCategory,
+    getNewArrivalProducts
 }
