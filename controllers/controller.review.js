@@ -1,20 +1,10 @@
 const model = require("../models/model.reviews");
 const validator = require("../utiles/validators/validator.reviews");
 
-let getReviewByID = async (req, res) => {
-    try {
-        let result = await model.findOne({ "_id": req.params.id });
-        result ?
-            res.status(200).json({ status: "success", data: result })
-            : res.status(200).json({ status: "success", message: "No Reviews Found" });
-    } catch (error) {
-        res.status(404).json({ status: "fail", error: error })
-    }
-}
-
 let getReviewsByProductID = async (req, res) => {
     try {
-        let result = await model.find({ "productId": { "$in": [req.params.id] } });
+        console.log("Product ID:", req.params.productId);
+        let result = await model.find({ "productId": { "$in": [req.params.productId] } });
         result.length > 0 ?
             res.status(200).json({ status: "success", data: result })
             : res.status(200).json({ status: "success", message: `No Reviews Found in ${req.params.id} Product` });
@@ -40,7 +30,6 @@ let addNewReview = async (req, res) => {
 }
 
 module.exports = {
-    getReviewByID,
     getReviewsByProductID,
     addNewReview,
 }
