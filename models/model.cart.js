@@ -7,7 +7,7 @@ let Schema = new database.Schema({
         quantity: { type: Number }
     }],
     total: Number,
-    statue: String
+    status: String
 }, { _id: true })
 
 module.exports = database.model('Cart', Schema)
