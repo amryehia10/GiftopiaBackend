@@ -3,7 +3,6 @@ const validator = require("../utiles/validators/validator.reviews");
 
 let getReviewsByProductID = async (req, res) => {
     try {
-        console.log("Product ID:", req.params.productId);
         let result = await model.find({ "productId": { "$in": [req.params.productId] } });
         result.length > 0 ?
             res.status(200).json({ status: "success", data: result })

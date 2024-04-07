@@ -15,7 +15,7 @@ let getAllUsers = async (req, res) => {
 
 let getUserByID = async (req, res) => {
     try {
-        let result = await model.findOne({ "_id": req.params.id });
+        let result = await model.findOne({ "_id": req.params.userId });
         result ?
             res.status(200).json({ status: "success", data: result })
             : res.status(200).json({ status: "success", message: "No Users Found" });
