@@ -2,9 +2,19 @@ const cart = require("../models/model.cart");
 const product = require("../models/model.product");
 const validator = require("../utiles/validators/validator.cart");
 
+let getAllCarts = async (req, res) => {
+    const userId = req.params.userId;
+    const result = await cart.find({},{"cart._id":0});
+    if (result) {
+        return res.status(200).json({ data: result });
+    } else
+        return res.status(404).json({ message: "User was not found to display the cart" });
+
+}
+
 let getAllAtCartByUserId = async (req, res) => {
     const userId = req.params.userId;
-    const cartData = await cart.find({ userId: userId });
+    const cartData = await cart.find({ userId: userId },{"cart._id":0});
     if (cartData) {
         return res.status(200).json({ data: cartData });
     } else
@@ -82,7 +92,8 @@ let addToCart = async (req, res) => {
 }
 
 module.exports = {
-    getAllAtCartByUserId,
+    addToCart,
+    getAllCarts,
     deleteProductAtCart,
-    addToCart
+    getAllAtCartByUserId
 };

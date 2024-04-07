@@ -5,18 +5,23 @@ const Schema = {
   type: "object",
   properties: {
     userId: { type: "string" },
-    productId: {
+    cart: {
       type: "array",
-      items: { type: "string" }
+      items: {
+        type: "object",
+        properties: {
+          productId: { type: "string" },
+          quantity: { type: "number" }
+        },
+        required: ["productId", "quantity"],
+        additionalProperties: false
+      }
     },
-    quantity: {
-      type: "array",
-      items:  { type: "number" }
-    },
-    total: {type: "number"}
+    total: {type: "number"},
+    status:{type: "string"}
 
   },
-  required: ["userId", "productId", "quantity", "total"],
+  required: ["userId", "cart", "status", "total"],
   additionalProperties: false
 };
 
