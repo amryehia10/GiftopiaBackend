@@ -5,6 +5,8 @@ const Schema = {
   type: "object",
   properties: {
     name: { type: "string" },
+    desc: { type: "string" },
+    createdAt: {type: "string"},
     images: {
       type: "array",
       items: { type: "string" }
@@ -13,15 +15,14 @@ const Schema = {
       type: "array",
       items: { type: "string" }
     },
-    desc: { type: "string" },
     star: { type: "number" },
     price: { type: "number" },
     quantity: { type: "number" },
     discount: { type: "number" },
+    numberOfRates: { type: "number" },
     numberOfSellings: { type: "number" },
-    numberOfRates: { type: "number" }
   },
-  required: ["name", "images", "cat", "desc", "star", "price", "quantity", "discount", "numberOfSellings", "numberOfRates"],
+  required: ["name", "images", "cat", "desc", "star", "price", "quantity", "discount", "numberOfSellings", "numberOfRates", "createdAt"],
   additionalProperties: false 
 };
 

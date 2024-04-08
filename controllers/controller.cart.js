@@ -1,93 +1,151 @@
-const cart = require("../models/model.cart");
-const product = require("../models/model.product");
+const model = require("../models/model.cart");
 const validator = require("../utiles/validators/validator.cart");
 
-let getAllAtCartByUserId = async (req, res) => {
-    let userId = req.params.userId;
-    let cartData = await cart.find({ userId: userId });
-    if (cartData) {
-        return res.status(200).json({ data: cartData });
-    } else
-        return res.status(404).json({ message: "User not found to display the cart" });
-
-}
-
-// let getCartById = async (req,res) => {
-//     let cartId = req.params.id;
-//     let cartData = await cart.findOne({_id: cartId});
-//     if(cartData)
-//         res.status(200).json({data: cartData});
-//     else
-//         res.status(404).json({message:"Cart not found"});
-
-// }
-
-//TODO -> the front should send the cart without the deleted product, even if there isn't products, every user has his cart,
-//TODO -> cart is deleted when user is deleted
-//TODO -> make deleteCart and check if user exists
-
-let updateCart = async (req, res) => {
-    let cartId = req.params.id;
-    if (validator(req.body)) {
-        let cart = await cart.updateOne({ _id: cartId }, { userId: req.body.userId, productId: req.body.productId });
-        if (cart)
-            res.status(201).json({ message: "Updated Successfully", data: cart });
-        else
-            res.status(404).json({ message: "Cart not found" });
-    } else {
-        res.status(404).json({ message: validator.errors[0].message });
-    }
-
-}
-
-//TODO => maybe will be updated
-let addToCart = async (req, res) => {
-    let productId = req.body.productId;
-    if (validator(req.body)) {
-        let isProductFound = await product.findOne({ _id: productId[0] });
-        if (!isProductFound) {
-            return res.status(500).json({
-                type: "Not Found",
-                msg: "Invalid request"
-            })
-        } else {
-            let userId = req.params.userId;
-            let quantity = req.body.quantity;
-            let total = req.body.total;
-            let cartData = await cart.find({ userId: userId });
-            if (cartData) {
-                const productIndexFound = cartData[0].productId.indexOf(productId);
-
-                //product found in cart
-                if (productIndexFound !== -1) {
-                    cartData[0].quantity += quantity;
-                    cartData[0].total += total;
-                } else {
-                    cartData[0].productId.push(productId);
+let getAllCarts = async (req, res) => {
+    try {
+        const result = await model.aggregate([
+            {
+                $lookup: {
+                    from: "products",
+                    localField: "items.productId",
+                    foreignField: "_id",
+                    as: "products"
                 }
-            } else {
-                return res.status(404).json({ message: "Error adding in cart" });
-            }
+            },
+            mapProduct
+        ]);
+        result ?
+            res.json({ status: "success", data: result })
+            : res.json({ status: "failed", msg: "Cart Collection is Empty" });
+    } catch (error) { res.status(404).json({ status: "fail", error: error.message }) }
+}
+
+let getUserCart = async (req, res) => {
+    try {
+        const result = await model.aggregate([
+            {
+                $match: {
+                    userId: req.params.userId
+                }
+            },
+            {
+                $lookup: {
+                    from: "products",
+                    localField: "items.productId",
+                    foreignField: "_id",
+                    as: "products"
+                }
+            },
+            mapProduct
+        ]);
+        result ?
+            res.json({ status: "success", data: result })
+            : res.json({ status: "failed", msg: "No Cart Found for Required User" });
+    } catch (error) { res.status(404).json({ status: "fail", error: error.message }) }
+}
+
+let updateCartProducts = async (req, res) => {
+    try {
+        const args = req.body
+        console.log(args)
+        if (validator(args)) {
+            const result = await model.findOneAndUpdate(
+                { userId: req.params.cartId },
+                { userId: args.userId, total: args.total, items: args.items },
+                { upsert: true, new: true }
+            );
+
+            result ?
+                res.json({ status: "success", msg: "Cart Products are Updated Successfully", data: result })
+                : res.json({ status: "failed", msg: `Current Cart Can\`t apply updates` });
+        } else {
+            res.status(404).json({ status: "fail", message: validator.errors[0].message });
         }
-        // console.log(isCartFound.productId)
-        // let cart = await cart.updateOne({_id:cartId}, {userId:req.body.userId, productId: req.body.productId.push(isCartFound.productId)});
-        // if(cart)
-        //     res.status(201).json({message:"Product is added Successfully", data:cart});
-        // else 
-        //     res.status(404).json({message:"Error adding in cart"});
-        //     } else {
-        //         let newCart = new cart(req.body);
-        //         newCart.save()
-        //         res.status(201).json({message:"Product is added Successfully", data:newCart})
-        //     }
-    } else {
-        res.status(404).json({ message: validator.errors[0].message });
-    }
+    } catch (error) { res.status(404).json({ status: "fail", error: error.message }) }
 }
 
 module.exports = {
-    getAllAtCartByUserId,
-    // getCartById,
-    updateCart,
-    addToCart
+    getAllCarts,
+    getUserCart,
+    updateCartProducts,
 };
+
+const mapProduct = {
+    $project: {
+        userId: 1,
+        total: 1,
+        products: {
+            $map: {
+                input: "$products",
+                as: "product",
+                in: {
+                    _id: "$$product._id",
+                    name: "$$product.name",
+                    price: "$$product.price",
+                    images: "$$product.images",
+                    quantity: "$$product.quantity",
+                    discount: "$$product.discount",
+                    soldQuantity: {
+                        $let: {
+                            vars: {
+                                soldQuantities: "$items.soldQuantity",
+                                productIndex: { $indexOfArray: ["$items.productId", "$$product._id"] }
+                            },
+                            in: { $arrayElemAt: ["$$soldQuantities", "$$productIndex"] }
+                        }
+                    }
+                }
+            }
+        }
+    }
+};
+// addNewCart,
+// updateCartStatus,
+
+
+//#region Old Methods
+/*
+let updateCartStatus = async (req, res) => {
+    try {
+        const args = req.body
+        if (validator(args)) {
+            const cart = await model.updateOne({ _id: args._id, status: { $ne: "pending" } }, { status: args.status })
+            cart ?
+            res.json({ status: "success", msg: "Cart-Status is Updated Successfully" })
+            : res.json({ status: "failed", msg: `Current Cart Status Can\`t apply updates` });
+        } else {
+            res.status(404).json({ status: "fail", message: validator.errors[0].message });
+        }
+    } catch (error) {
+        res.status(404).json({ status: "fail", error: error.message })
+    }
+}
+
+
+let addNewCart = async (req, res) => {
+    try {
+        let args = req.body;
+        if (validator(args)) {
+            let cart = new model(args)
+            cart.save();
+            res.status(200).json({ status: "success", message: "Cart is Added Successfully" });
+        }
+        else {
+            res.status(404).json({ status: "fail", message: validator.errors[0].message });
+        }
+    } catch (error) {
+        res.status(404).json({ status: "fail", error: error.message })
+    }
+}
+*/
+
+
+
+//Cart {pending, submit, cancel}
+/**
+ * add-New-Cart===>Done
+ * get-User-Cart===>Done
+ * update-Cart-Status===>Done
+ * update-Cart-Products===>Done
+*/
+//#endregion

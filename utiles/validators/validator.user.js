@@ -1,5 +1,6 @@
 const Ajv = require("../../packages/node_modules/ajv");
-const ajv = new Ajv();
+const ajv = new Ajv({allErrors : true});
+require('../../packages/node_modules/ajv-formats')(ajv);
 
 const Schema = {
   type: "object",

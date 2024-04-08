@@ -2,11 +2,10 @@ const express = require('../packages/node_modules/express');
 const router = express.Router();
 const controller = require("../controllers/controller.cart");
 
-router.get("/:userId", controller.getAllAtCartByUserId);
-// router.get("/:id", controller.getCartById);
-router.put("/:id", controller.updateCart);
-router.post("/:userId", controller.addToCart);
-
-
+router.get("/", controller.getAllCarts);
+router.get("/:userId", controller.getUserCart);
+router.put("/", controller.updateCartProducts);
+// router.post("/:userId", controller.addNewCart);
+// router.put("/status/:userId", controller.updateCartStatus);
 
 module.exports = router;

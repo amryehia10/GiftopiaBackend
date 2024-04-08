@@ -13,6 +13,9 @@ database.connection.on("open", () => {
   console.log("Open");
   app.use("/auth", Routes.AuthRoute);
   app.use("/cart", Routes.CartRoute);
+  app.use("/user", Routes.UserRoute);
+  app.use("/order", Routes.OrderRoute);
+  app.use("/review", Routes.ReviewRoute);
   app.use("/product", Routes.ProductRoute);
   app.use("/contact", Routes.ContactRoute);
   app.use("/category", Routes.CategoryRoute);

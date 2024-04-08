@@ -5,7 +5,9 @@ const controller = require("../controllers/controller.product");
 
 router.get("/", controller.getAllProducts);
 router.get("/:id", controller.getProductByID);
+router.get("/date/old", controller.getOldProducts);
 router.get("/category/:id", controller.getProductsByCategory);
+router.get("/date/new-arrival", controller.getNewArrivalProducts);
 
 router.post("/", controller.addNewProduct);
 
