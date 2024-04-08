@@ -9,16 +9,17 @@ app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-
 database.connection.on("open", () => {
-    console.log("Open");
-    app.use("/cart",Routes.CartRoute);
-    app.use("/product", Routes.ProductRoute);
-    app.use("/contact", Routes.ContactRoute);
-    app.use("/category", Routes.CategoryRoute);
-    
+  console.log("Open");
+  app.use("/auth", Routes.AuthRoute);
+  app.use("/cart", Routes.CartRoute);
+  app.use("/product", Routes.ProductRoute);
+  app.use("/contact", Routes.ContactRoute);
+  app.use("/category", Routes.CategoryRoute);
 });
 
-database.connection.on("error", () => { console.log("Error Happened") })
+database.connection.on("error", () => {
+  console.log("Error Happened");
+});
 
-app.listen(port, () => console.log(`Running on: http://localhost:${port}`))
+app.listen(port, () => console.log(`Running on: http://localhost:${port}`));
