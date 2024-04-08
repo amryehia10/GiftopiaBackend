@@ -43,26 +43,28 @@ let getUserCart = async (req, res) => {
             : res.json({ status: "failed", msg: "No Cart Found for Required User" });
     } catch (error) { res.status(404).json({ status: "fail", error: error.message }) }
 }
-
 let updateCartProducts = async (req, res) => {
     try {
-        const args = req.body
-        console.log(args)
+        const args = req.body;
         if (validator(args)) {
-            const result = await model.findOneAndUpdate(
-                { userId: req.params.cartId },
-                { userId: args.userId, total: args.total, items: args.items },
-                { upsert: true, new: true }
-            );
-
-            result ?
-                res.json({ status: "success", msg: "Cart Products are Updated Successfully", data: result })
-                : res.json({ status: "failed", msg: `Current Cart Can\`t apply updates` });
+            const user = await model.findOne({ userId: args.userId })
+            if (user) {
+                const result = await model.findOneAndUpdate(
+                    { userId: args.userId },
+                    { items: args.items },
+                    { new: true });
+                result ?
+                    res.status(200).json({ status: "success", msg: "Cart Products Updated Successfully ", data: result })
+                    : res.status(404).json({ status: "fail", msg: "No Updates Happened" });
+            } else {
+                const result = await model.create({ ...args })
+                res.status(200).json({ status: "success", msg: "Cart Created Successfully", data: result })
+            }
         } else {
-            res.status(404).json({ status: "fail", message: validator.errors[0].message });
+            res.status(422).json({ status: "fail", message: validator.errors[0].message });
         }
     } catch (error) { res.status(404).json({ status: "fail", error: error.message }) }
-}
+};
 
 module.exports = {
     getAllCarts,
@@ -82,7 +84,7 @@ const mapProduct = {
                     _id: "$$product._id",
                     name: "$$product.name",
                     price: "$$product.price",
-                    images: "$$product.images",
+                    image: { $arrayElemAt: ["$$product.images", 0] },
                     quantity: "$$product.quantity",
                     discount: "$$product.discount",
                     soldQuantity: {
@@ -99,53 +101,3 @@ const mapProduct = {
         }
     }
 };
-// addNewCart,
-// updateCartStatus,
-
-
-//#region Old Methods
-/*
-let updateCartStatus = async (req, res) => {
-    try {
-        const args = req.body
-        if (validator(args)) {
-            const cart = await model.updateOne({ _id: args._id, status: { $ne: "pending" } }, { status: args.status })
-            cart ?
-            res.json({ status: "success", msg: "Cart-Status is Updated Successfully" })
-            : res.json({ status: "failed", msg: `Current Cart Status Can\`t apply updates` });
-        } else {
-            res.status(404).json({ status: "fail", message: validator.errors[0].message });
-        }
-    } catch (error) {
-        res.status(404).json({ status: "fail", error: error.message })
-    }
-}
-
-
-let addNewCart = async (req, res) => {
-    try {
-        let args = req.body;
-        if (validator(args)) {
-            let cart = new model(args)
-            cart.save();
-            res.status(200).json({ status: "success", message: "Cart is Added Successfully" });
-        }
-        else {
-            res.status(404).json({ status: "fail", message: validator.errors[0].message });
-        }
-    } catch (error) {
-        res.status(404).json({ status: "fail", error: error.message })
-    }
-}
-*/
-
-
-
-//Cart {pending, submit, cancel}
-/**
- * add-New-Cart===>Done
- * get-User-Cart===>Done
- * update-Cart-Status===>Done
- * update-Cart-Products===>Done
-*/
-//#endregion
