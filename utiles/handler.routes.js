@@ -6,6 +6,7 @@ const ReviewRoute = require("../routes/route.review");
 const ContactRoute = require("../routes/route.ticket");
 const ProductRoute = require("../routes/route.product");
 const CategoryRoute = require("../routes/route.category");
+const WishlistRoute = require("../routes/route.wishlist");
 
 module.exports = {
   AuthRoute,
@@ -16,4 +17,5 @@ module.exports = {
   ContactRoute,
   ProductRoute,
   CategoryRoute,
+  WishlistRoute,
 };

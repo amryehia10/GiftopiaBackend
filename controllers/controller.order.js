@@ -50,7 +50,7 @@ let changeOrderStatus = async (req, res) => {
     console.log(args)
     if (validator(args)) {
       let result = await model.findOneAndUpdate(
-        { _id: args._id, status: { $nin: ["cancel", "closed", "success"] } },
+        { _id: req.params.id, status: { $nin: ["cancel", "closed", "success"] } },
         { status: args.status },
         { new: true }
       );

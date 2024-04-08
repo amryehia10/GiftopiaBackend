@@ -16,8 +16,9 @@ database.connection.on("open", () => {
   app.use("/user", Routes.UserRoute);
   app.use("/order", Routes.OrderRoute);
   app.use("/review", Routes.ReviewRoute);
-  app.use("/product", Routes.ProductRoute);
+  app.use("/wishlist", Routes.WishlistRoute);
   app.use("/contact", Routes.ContactRoute);
+  app.use("/product", Routes.ProductRoute);
   app.use("/category", Routes.CategoryRoute);
 });
 
