@@ -1,5 +1,5 @@
-const cart = require("../models/model.cart");
 const model = require("../models/model.order");
+const pipe = require("../utiles/pipe.product.map");
 const validator = require("../utiles/validators/validator.order");
 
 let addNewOrder = async (req, res) => {
@@ -18,63 +18,66 @@ let addNewOrder = async (req, res) => {
 
 let getAllOrders = async (req, res) => {
   try {
-    const result = await model.aggregate([
-      {
-        $lookup: {
-          from: 'carts', // This should match the name of the collection MongoDB uses for carts
-          localField: 'cartId', // The field in the Order collection
-          foreignField: '_id', // The corresponding field in the Cart collection that matches localField
-          as: 'cartDetails' // The array field where the matched documents from the Cart collection will be placed
-        }
-      },
-      
-    ]);
-    // let result = await model.find({});
-    console.log(result);
+    const result = await model.aggregate([...pipe("items.productId", "_id")]);
     result ?
-      res.status(200).json({ status: "success", data: result })
+      res.json({ status: "success", data: result })
       : res.status(404).json({ status: "fail", message: "Error Happened" });
-  } catch (error) {
-    console.error('Failed to fetch orders with details:', error);
-    throw error; // Rethrow or handle as needed
-  }
+  } catch (error) { res.status(404).json({ status: "fail", error: error.message }) }
+
 }
 
 let getUserOrders = async (req, res) => {
-
+  try {
+    console.log(req.params)
+    console.log(req.params.userId)
+    const result = await model.aggregate([
+      {
+        $match: {
+          userId: req.params.userId
+        }
+      },
+      ...pipe("items.productId", "_id")]
+    );
+    result ?
+      res.json({ status: "success", data: result })
+      : res.json({ status: "failed", msg: "No Orders Found for Required User" });
+  } catch (error) { res.status(404).json({ status: "fail", error: error.message }) }
 }
 
 let changeOrderStatus = async (req, res) => {
   try {
     let args = req.body;
+    console.log(args)
     if (validator(args)) {
-      let result = await model.findOneAndUpdate({ _id: args._id }, { status: args.status }, { new: true })
+      let result = await model.findOneAndUpdate(
+        { _id: args._id, status: { $nin: ["cancel", "closed", "success"] } },
+        { status: args.status },
+        { new: true }
+      );
       console.log(result)
       result ?
-        res.status(200).json({ status: "success", message: "Order-Status is updated successfully" })
-        : res.status(404).json({ status: "fail", message: "Error Happened" });
-    } else {
-      res.status(404).json({ status: "fail", message: validator.errors[0].message });
-    }
-  } catch (error) { res.status(404).json({ status: "fail", error: error.message }) }
+        res.status(200).json({ status: "success", msg: "Order Status Updated Successfully" })
+        : res.status(404).json({ status: "fail", msg: "No Updates Happened fo Order" });
+    } else { res.status(404).json({ status: "fail", message: validator.errors[0].message }); }
+  } catch (error) { res.status(500).json({ status: "fail", error: error.message }); }
+};
 
-}
 
-let deleteOrder = async (req, res) => {
-  try {
-    let args = req.body;
+// let deleteOrder = async (req, res) => {
+//   try {
+//     let args = req.body;
 
-    let result = await model.findOneAndUpdate({ _id: args._id }, { status: "Canceled" }, { new: true })
-    console.log(result)
-    result ?
-      res.status(200).json({ status: "success", message: "Order-Status is canceled successfully" })
-      : res.status(404).json({ status: "fail", message: "Error Happened" });
+//     let result = await model.findOneAndUpdate({ _id: args._id }, { status: "Canceled" }, { new: true })
+//     console.log(result)
+//     result ?
+//       res.status(200).json({ status: "success", message: "Order-Status is canceled successfully" })
+//       : res.status(404).json({ status: "fail", message: "Error Happened" });
 
-  } catch (error) { res.status(404).json({ status: "fail", error: error.message }) }
-}
+//   } catch (error) { res.status(404).json({ status: "fail", error: error.message }) }
+// }
 module.exports = {
   addNewOrder,
-  deleteOrder,
+  // deleteOrder,
   getAllOrders,
   getUserOrders,
   changeOrderStatus

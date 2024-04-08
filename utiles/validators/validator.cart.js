@@ -17,9 +17,8 @@ const Schema = {
         additionalProperties: false
       }
     },
-    total: {type: "number"},
   },
-  required: ["userId", "items", "total"],
+  required: ["userId", "items"],
   additionalProperties: false
 };
 

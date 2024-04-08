@@ -3,12 +3,12 @@ const router = express.Router();
 const controller = require("../controllers/controller.order");
 
 router.get("/", controller.getAllOrders);
-router.get("/:id", controller.getUserOrders);
+router.get("/:userId", controller.getUserOrders);
 
-router.put("/:id", controller.changeOrderStatus);
+router.put("/", controller.changeOrderStatus);
 
 router.post("/", controller.addNewOrder);
-router.delete("/", controller.deleteOrder,);
+// router.delete("/", controller.deleteOrder,);
 
 
 
