@@ -18,10 +18,7 @@ database.connection.on("open", () => {
     app.use("/review", Routes.ReviewRoute);
     app.use("/product", Routes.ProductRoute);
     app.use("/contact", Routes.ContactRoute);
-    app.use("/category", Routes.CategoryRoute);
-
-
-    
+    app.use("/category", Routes.CategoryRoute);    
 });
 
 database.connection.on("error", () => { console.log("Error Happened") })

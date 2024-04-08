@@ -2,12 +2,11 @@ const database = require('../utiles/handler.database');
 
 let Schema = new database.Schema({
     userId: String,
-    cart: [{
-        productId: { type: String },
-        quantity: { type: Number }
+    items: [{
+        productId: { type: database.Schema.Types.ObjectId, ref: 'Product'  },
+        soldQuantity: { type: Number }
     }],
     total: Number,
-    status: String
 }, { _id: true })
 
 module.exports = database.model('Cart', Schema)

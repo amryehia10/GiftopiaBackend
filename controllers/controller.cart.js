@@ -1,32 +1,118 @@
 const model = require("../models/model.cart");
-const product = require("../models/model.product");
 const validator = require("../utiles/validators/validator.cart");
 
 let getAllCarts = async (req, res) => {
-    const result = await model.find({}, { "cart._id": 0 });
-    result ?
-        res.status(200).json({ data: result })
-        : res.status(404).json({ message: "User was not found to display the cart" });
-
+    try {
+        const result = await model.aggregate([
+            {
+                $lookup: {
+                    from: "products",
+                    localField: "items.productId",
+                    foreignField: "_id",
+                    as: "products"
+                }
+            },
+            mapProduct
+        ]);
+        result ?
+            res.json({ status: "success", data: result })
+            : res.json({ status: "failed", msg: "Cart Collection is Empty" });
+    } catch (error) { res.status(404).json({ status: "fail", error: error.message }) }
 }
 
-let getCartsByUserID = async (req, res) => {
-    const userId = req.params.userId;
-    const cartData = await model.find({ userId: userId }, { "cart._id": 0 });
-    cartData ?
-        res.status(200).json({ data: cartData })
-        : res.status(404).json({ message: "User was not found to display the cart" });
-
+let getUserCart = async (req, res) => {
+    try {
+        const result = await model.aggregate([
+            {
+                $match: {
+                    userId: req.params.userId
+                }
+            },
+            {
+                $lookup: {
+                    from: "products",
+                    localField: "items.productId",
+                    foreignField: "_id",
+                    as: "products"
+                }
+            },
+            mapProduct
+        ]);
+        result ?
+            res.json({ status: "success", data: result })
+            : res.json({ status: "failed", msg: "No Cart Found for Required User" });
+    } catch (error) { res.status(404).json({ status: "fail", error: error.message }) }
 }
 
+let updateCartProducts = async (req, res) => {
+    try {
+        const args = req.body
+        console.log(args)
+        if (validator(args)) {
+            const result = await model.findOneAndUpdate(
+                { userId: req.params.cartId },
+                { userId: args.userId, total: args.total, items: args.items },
+                { upsert: true, new: true }
+            );
+
+            result ?
+                res.json({ status: "success", msg: "Cart Products are Updated Successfully", data: result })
+                : res.json({ status: "failed", msg: `Current Cart Can\`t apply updates` });
+        } else {
+            res.status(404).json({ status: "fail", message: validator.errors[0].message });
+        }
+    } catch (error) { res.status(404).json({ status: "fail", error: error.message }) }
+}
+
+module.exports = {
+    getAllCarts,
+    getUserCart,
+    updateCartProducts,
+};
+
+const mapProduct = {
+    $project: {
+        userId: 1,
+        total: 1,
+        products: {
+            $map: {
+                input: "$products",
+                as: "product",
+                in: {
+                    _id: "$$product._id",
+                    name: "$$product.name",
+                    price: "$$product.price",
+                    images: "$$product.images",
+                    quantity: "$$product.quantity",
+                    discount: "$$product.discount",
+                    soldQuantity: {
+                        $let: {
+                            vars: {
+                                soldQuantities: "$items.soldQuantity",
+                                productIndex: { $indexOfArray: ["$items.productId", "$$product._id"] }
+                            },
+                            in: { $arrayElemAt: ["$$soldQuantities", "$$productIndex"] }
+                        }
+                    }
+                }
+            }
+        }
+    }
+};
+// addNewCart,
+// updateCartStatus,
+
+
+//#region Old Methods
+/*
 let updateCartStatus = async (req, res) => {
     try {
         const args = req.body
         if (validator(args)) {
             const cart = await model.updateOne({ _id: args._id, status: { $ne: "pending" } }, { status: args.status })
             cart ?
-                res.json({ status: "success", msg: "Cart-Status is Updated Successfully" })
-                : res.json({ status: "failed", msg: `Current Cart Status Can\`t apply updates` });
+            res.json({ status: "success", msg: "Cart-Status is Updated Successfully" })
+            : res.json({ status: "failed", msg: `Current Cart Status Can\`t apply updates` });
         } else {
             res.status(404).json({ status: "fail", message: validator.errors[0].message });
         }
@@ -35,25 +121,6 @@ let updateCartStatus = async (req, res) => {
     }
 }
 
-let updateCartProducts = async (req, res) => {
-    try {
-        const args = req.body
-        if (validator(args)) {
-            const cart = await model.findOneAndUpdate(
-                { _id: req.params.cartId, status: "pending" },
-                { cart: args.cart, total: args.total },
-                { new: true }
-            );
-            cart ?
-                res.json({ status: "success", msg: "Cart-Products are Updated Successfully", msg: cart })
-                : res.json({ status: "failed", msg: `Current Cart Can\`t apply updates` });
-        } else {
-            res.status(404).json({ status: "fail", message: validator.errors[0].message });
-        }
-    } catch (error) {
-        res.status(404).json({ status: "fail", error: error.message })
-    }
-}
 
 let addNewCart = async (req, res) => {
     try {
@@ -70,15 +137,9 @@ let addNewCart = async (req, res) => {
         res.status(404).json({ status: "fail", error: error.message })
     }
 }
+*/
 
 
-module.exports = {
-    addNewCart,
-    getAllCarts,
-    getCartsByUserID,
-    updateCartStatus,
-    updateCartProducts,
-};
 
 //Cart {pending, submit, cancel}
 /**
@@ -86,4 +147,5 @@ module.exports = {
  * get-User-Cart===>Done
  * update-Cart-Status===>Done
  * update-Cart-Products===>Done
- */
+*/
+//#endregion
