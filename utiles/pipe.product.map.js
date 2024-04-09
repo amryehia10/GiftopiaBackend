@@ -5,44 +5,46 @@ function mapProduct(isSoldProduct) {
             total: 1,
             status: {
                 $cond: {
-                    if: isSoldProduct, then:  "$status", // Include status if isSoldProduct is true
-        else: "$$REMOVE", 
-            }
-        },
-        products: {
-            $map: {
-                input: "$products",
-                as: "product",
-                in: {
-                    _id: "$$product._id",
-                    name: "$$product.name",
-                    price: "$$product.price",
-                    image: { $arrayElemAt: ["$$product.images", 0] },
-                    quantity: "$$product.quantity",
-                    discount: "$$product.discount",
-                    soldQuantity: {
-                        $cond: {
-                            if: isSoldProduct,
-                            then: {
-                                $let: {
-                                    vars: {
-                                        soldQuantities: "$items.soldQuantity",
-                                        productIndex: {
-                                            $indexOfArray: ["$items.productId", "$$product._id"]
+                    if: isSoldProduct,
+                    then: "$status",
+                    else: "$$REMOVE",
+                }
+            },
+            products: {
+                $map: {
+                    input: "$products",
+                    as: "product",
+                    in: {
+                        _id: "$$product._id",
+                        name: "$$product.name",
+                        price: "$$product.price",
+                        image: { $arrayElemAt: ["$$product.images", 0] },
+                        quantity: "$$product.quantity",
+                        discount: "$$product.discount",
+                        soldQuantity: {
+                            $cond: {
+                                if: isSoldProduct,
+                                then: {
+                                    $let: {
+                                        vars: {
+                                            soldQuantities: "$items.soldQuantity",
+                                            productIndex: {
+                                                $indexOfArray: ["$items.productId", "$$product._id"]
+                                            }
+                                        },
+                                        in: {
+                                            $arrayElemAt: ["$$soldQuantities", "$$productIndex"]
                                         }
-                                    },
-                                    in: {
-                                        $arrayElemAt: ["$$soldQuantities", "$$productIndex"]
                                     }
-                                }
-                            },
-                            else: "$$REMOVE"
+                                },
+                                else: "$$REMOVE"
+                            }
                         }
                     }
                 }
             }
         }
-    }}
+    }
 };
 
 
