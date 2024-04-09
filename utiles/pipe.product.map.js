@@ -3,42 +3,48 @@ function mapProduct(isSoldProduct) {
         $project: {
             userId: 1,
             total: 1,
-            products: {
-                $map: {
-                    input: "$products",
-                    as: "product",
-                    in: {
-                        _id: "$$product._id",
-                        name: "$$product.name",
-                        price: "$$product.price",
-                        image: { $arrayElemAt: ["$$product.images", 0] },
-                        quantity: "$$product.quantity",
-                        discount: "$$product.discount",
-                        soldQuantity: {
-                            $cond: {
-                                if: isSoldProduct,
-                                then: {
-                                    $let: {
-                                        vars: {
-                                            soldQuantities: "$items.soldQuantity",
-                                            productIndex: {
-                                                $indexOfArray: ["$items.productId", "$$product._id"]
-                                            }
-                                        },
-                                        in: {
-                                            $arrayElemAt: ["$$soldQuantities", "$$productIndex"]
+            status: {
+                $cond: {
+                    if: isSoldProduct, then:  "$status", // Include status if isSoldProduct is true
+        else: "$$REMOVE", 
+            }
+        },
+        products: {
+            $map: {
+                input: "$products",
+                as: "product",
+                in: {
+                    _id: "$$product._id",
+                    name: "$$product.name",
+                    price: "$$product.price",
+                    image: { $arrayElemAt: ["$$product.images", 0] },
+                    quantity: "$$product.quantity",
+                    discount: "$$product.discount",
+                    soldQuantity: {
+                        $cond: {
+                            if: isSoldProduct,
+                            then: {
+                                $let: {
+                                    vars: {
+                                        soldQuantities: "$items.soldQuantity",
+                                        productIndex: {
+                                            $indexOfArray: ["$items.productId", "$$product._id"]
                                         }
+                                    },
+                                    in: {
+                                        $arrayElemAt: ["$$soldQuantities", "$$productIndex"]
                                     }
-                                },
-                                else: "$$REMOVE"
-                            }
+                                }
+                            },
+                            else: "$$REMOVE"
                         }
                     }
                 }
             }
         }
-    };
-}
+    }}
+};
+
 
 const pipe = (local, foreign, isSoldProduct = true) => [
     {

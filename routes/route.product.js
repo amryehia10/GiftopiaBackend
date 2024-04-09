@@ -12,7 +12,7 @@ router.get("/date/new-arrival", controller.getNewArrivalProducts);
 router.post("/", controller.addNewProduct);
 
 router.put("/:id", controller.updateProduct);
-router.post("/:id", controller.deleteProduct);
+router.delete("/:id", controller.deleteProduct);
 
 
 
