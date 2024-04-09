@@ -5,12 +5,12 @@ const Schema = {
   type: "object",
   properties: {
     userId: { type: "string" },
-    productId: {
+    products: {
       type: "array",
       items: { type: "string" }
     }
   },
-  required: ["userId", "productId"],
+  required: ["userId", "products"],
   additionalProperties: false 
 };
 

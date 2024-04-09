@@ -2,8 +2,8 @@ const database = require('../utiles/handler.database');
 
 let Schema = new database.Schema( {
     userId: String,
-    productId:[{
-        type: String
+    products:[{
+        type: database.Schema.Types.ObjectId, ref: 'Product' 
     }]
 },{ _id: true }) 
 
