@@ -24,13 +24,27 @@ let addNewReview = async (req, res) => {
     comment: req.body.comment,
     rate: req.body.rate,
   };
+
   try {
     if (validator(args)) {
+      // 1. Check for an existing review
+      let existingReview = await model.findOne({
+        userId: args.userId,
+        productId: args.productId,
+      });
+
+      // 2. If a review exists, delete it
+      if (existingReview) {
+        await model.deleteOne({ _id: existingReview._id });
+      }
+
+      // 3. Create and save the new review
       let review = new model(args);
-      review.save();
+      await review.save(); // Use await here
+
       res.status(200).json({
         status: "success",
-        message: "Review is added successfully",
+        message: "Review updated successfully", // More accurate message
         review,
       });
     } else {
