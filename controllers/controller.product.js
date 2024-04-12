@@ -76,7 +76,7 @@ let addNewProduct = async (req, res) => {
         if (validator(args)) {
             let prd = new model(args)
             prd.save();
-            res.status(200).json({ status: "success", message: "Ticket is added successfully" });
+            res.status(200).json({ status: "success", message: "Ticket is added successfully", data: prd });
         }
         else {
             res.status(404).json({ status: "fail", message: validator.errors[0].message });
@@ -87,13 +87,14 @@ let addNewProduct = async (req, res) => {
 }
 
 let updateProduct = async (req, res) => {
-
+console.log("Update")
+console.log(req.body)
     try {
         let prd = req.body;
-        if (validator(args)) {
+        if (validator(prd)) {
             let result = await model
                 .findOneAndUpdate(
-                    { id: prd.id },
+                    { _id: req.params.id},
                     {
                         cat: prd.cat, name: prd.name, desc: prd.desc,
                         star: prd.star, price: prd.price, images: prd.images,
