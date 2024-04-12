@@ -1,8 +1,8 @@
-const product = require("../models/model.product");
-const category = require("../models/model.category");
+const user = require("../models/model.user");
 const order = require("../models/model.order");
 const ticket = require("../models/model.ticket");
-const user = require("../models/model.user");
+const product = require("../models/model.product");
+const category = require("../models/model.category");
 
 let getDashoard = async (req, res) => {
     let users = await user.find({}).count();
