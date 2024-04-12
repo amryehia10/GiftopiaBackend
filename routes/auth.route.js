@@ -1,7 +1,7 @@
-const express = require("../packages/node_modules/express");
+const express = require("../node_modules/express");
 const router = express.Router();
 const controller = require("../controllers/auth.controller");
-const multer = require("../packages/node_modules/multer");
+const multer = require("../node_modules/multer");
 const path = require("path");
 const AuthMiddleware = require("../middle-wares/AuthMiddleware ");
 

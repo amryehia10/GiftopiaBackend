@@ -1,4 +1,4 @@
-const Ajv = require("../../packages/node_modules/ajv/dist/ajv");
+const Ajv = require("../../node_modules/ajv");
 const ajv = new Ajv();
 
 const Schema = {

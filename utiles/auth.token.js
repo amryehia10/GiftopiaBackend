@@ -1,4 +1,4 @@
-const token = require("../packages/node_modules/jsonwebtoken");
+const token = require("../node_modules/jsonwebtoken");
 const secretKey = "dfm!@asdl;kdma*fnkqo@51#4ekwoq54elm$%da,fdsnkfg;wejmf,nk^15&ndkqml#nsdfnddnv"
 
 let sign = async (data) => {

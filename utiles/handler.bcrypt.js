@@ -1,4 +1,4 @@
-const bcrypt = require("../packages/node_modules/bcrypt");
+const bcrypt = require("../node_modules/bcrypt");
 let salt = bcrypt.genSaltSync(10);
 
 let hash = (pass) => {

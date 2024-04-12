@@ -1,4 +1,4 @@
-const jwt = require("../packages/node_modules/jsonwebtoken");
+const jwt = require("../node_modules/jsonwebtoken");
 const { JWT: JWTCongig } = require("../config.json");
 
 class AuthMiddleware {

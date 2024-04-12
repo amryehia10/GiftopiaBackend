@@ -1,4 +1,4 @@
-const express = require('../packages/node_modules/express');
+const express = require('../node_modules/express');
 const router = express.Router();
 const user = require("../controllers/controller.user");
 const admin = require("../controllers/admin.controller");
