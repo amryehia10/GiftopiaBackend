@@ -5,6 +5,3 @@
 !.vscode/extensions.json
 .history/*
 .hintrc
-package-lock.json
-/node_modules
-/yarn.lock
