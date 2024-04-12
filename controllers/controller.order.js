@@ -1,13 +1,45 @@
 const model = require("../models/model.order");
+const prdModel = require("../models/model.product");
 const pipe = require("../utiles/pipe.product.map");
 const validator = require("../utiles/validators/validator.order");
 
 let addNewOrder = async (req, res) => {
   try {
     let args = req.body;
+    console.log(args)
     if (validator(args)) {
-      let order = new model(args)
-      order.save();
+      let order = new model(args);
+      await order.save();
+      
+      const result = await model.aggregate([
+          {
+              $match: { _id: order._id }
+          },
+          {
+              $lookup: {
+                  from: "products",
+                  localField: "items.productId",
+                  foreignField: "_id",
+                  as: "result"
+              }
+          }
+      ]);
+      
+      if (result.length > 0) {
+          const items = result[0].items;
+      
+          for (const item of items) {
+              const productId = item.productId;
+              const soldQuantity = item.soldQuantity;
+      
+              await prdModel.updateOne(
+                  { _id: productId },
+                  { $inc: { quantity: -soldQuantity } }
+              );
+          }
+      }
+      
+
       res.status(200).json({ status: "success", message: "Order is added successfully" });
     } else {
       res.status(404).json({ status: "fail", message: validator.errors[0].message });
