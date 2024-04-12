@@ -1,4 +1,5 @@
 const User = require("../models/user.model");
+const mongoose = require("../packages/node_modules/mongoose");
 const jwt = require("../packages/node_modules/jsonwebtoken");
 const validator = require("../utiles/validators/user.validator");
 const bcrypt = require("../packages/node_modules/bcrypt");
@@ -72,6 +73,7 @@ const register = async (req, res) => {
     phone: user.phone.map((p) => p.number),
     gender: user.gender,
     userType: "customer",
+    disabled: false,
   });
 
   // Save the new user to the database
@@ -96,7 +98,7 @@ const register = async (req, res) => {
       expiresIn: "1y",
     }
   );
-  res.status(200).json({ token });
+  res.status(201).json({ token });
 };
 
 const login = async (req, res) => {
@@ -108,7 +110,8 @@ const login = async (req, res) => {
   }
   // find user
   const user = await User.findOne({ email });
-  if (!user) return res.status(401).json({ msg: "Invalid email or password" });
+  if (!user || user.disabled)
+    return res.status(401).json({ msg: "Invalid email or password" });
 
   const isPasswordValid = await bcrypt.compare(password, user.password);
 
@@ -130,6 +133,121 @@ const login = async (req, res) => {
   );
 
   res.status(200).json({ token });
+};
+
+const updateUser = async (req, res) => {
+  const _id = req.params.userId;
+
+  if (!_id) {
+    res.status(400).json({ msg: "Invalid user data." });
+  }
+  // find the user
+  const userDb = await User.findOne({ _id });
+
+  if (!userDb) return res.status(404).json({ msg: "User Not Found!" });
+
+  /*
+    name: string;
+    email: string;
+    password: string;
+    gender: string;
+    age: number | null;
+    profileImage: File | null;
+    phone: { number: string }[];
+    address: { address: string }[];
+  */
+  const UserReq = req.body;
+  UserReq.profileImage = JSON.stringify(req.file.path);
+
+  for (let attr in UserReq) {
+    UserReq[attr] = JSON.parse(UserReq[attr]);
+  }
+  //  Validate UserReq
+  const errorMsgs = validatorUpdateUser(user);
+
+  // basic validation
+  if (Object.keys(errorMsgs).length > 0) {
+    res.status(400).json({ msg: "Input data error!", details: errorMsgs });
+    return;
+  }
+
+  // check if email exists in the database
+  if (UserReq.email && UserReq.email != userDb.email) {
+    if (await User.findOne({ email: UserReq.email })) {
+      res.status(400).json({
+        msg: "Input data error!",
+        details: {
+          email: {
+            msg: "Email is already in use on another account!",
+            type: "error",
+          },
+        },
+      });
+      return;
+    }
+  }
+
+  // check if one of phones exists in the database
+  if (UserReq.phone && UserReq.phone != userDb.phone) {
+    for (let idx = 0; idx < UserReq.phone.length; idx++) {
+      const phone = UserReq.phone[idx].number;
+      if (await UserReq.findOne({ phone: phone })) {
+        res.status(400).json({
+          msg: "Input data error!",
+          details: {
+            [`phone_${idx}`]: {
+              msg: "Phone is already in use on another account!",
+              type: "error",
+            },
+          },
+        });
+        return;
+      }
+    }
+  }
+
+  // save changes
+  for (let attr in UserReq) {
+    userDb[attr] = UserReq[attr];
+  }
+
+  // delete the user
+  try {
+    await user.save();
+  } catch (error) {
+    console.error("Error occurred while updating user!", error);
+    return res.status(500).json({ msg: "Error occurred while updating user!" });
+  }
+
+  res.status(200).json({ msg: "Deleted Successfully!", user });
+};
+
+const deleteUser = async (req, res) => {
+  const userId = req.params.userId;
+
+  if (!mongoose.Types.ObjectId.isValid(userId)) {
+    return res.status(400).json({ msg: "Invalid user ID." });
+  }
+
+  try {
+    // Find the user by ID
+    const user = await User.findOne({ _id: userId });
+
+    if (!user) {
+      return res.status(404).json({ msg: "User Not Found!" });
+    }
+
+    // Update the disabled field
+    user.disabled = true;
+
+    // Save the updated user document
+    await user.save();
+
+    res.status(200).json({ msg: "Deleted Successfully!", user });
+  } catch (error) {
+    console.error("Error occurred while deleting user:", error);
+    return res.status(500).json({ msg: "Error occurred while deleting user" });
+  }
 };
 
 /* Validatoes Fuctions */
@@ -210,6 +328,83 @@ function validatorUser(user) {
   return formMsg;
 }
 
+function validatorUpdateUser(user) {
+  formMsg = {};
+  // name
+  if (user.name && !validateName(user.name)) {
+    formMsg["name"] = {
+      msg: "Name must be between 3 to 20 characters!",
+      type: "error",
+    };
+  }
+
+  // email
+  if (user.email && !validateEmail(user.email)) {
+    formMsg["email"] = {
+      msg: "Email is not in correct format!",
+      type: "error",
+    };
+  }
+
+  //password
+  if (user.password && !validatePassword(user.password)) {
+    formMsg["password"] = {
+      msg: "Password must be between 8 to 64 characters!",
+      type: "error",
+    };
+  }
+
+  // gender
+  if (user.gender && user.gender == "") {
+    formMsg["gender"] = {
+      msg: "Please select your gender!",
+      type: "error",
+    };
+  }
+
+  // age
+  if (user.age && !validateAge(user.age)) {
+    formMsg["age"] = {
+      msg: "Age must be between 10 to 150 years!",
+      type: "error",
+    };
+  }
+
+  // image
+  if (user.profileImage && !validateImage(user.profileImage)) {
+    formMsg["image"] = {
+      msg: "Please add your profile photo! (.png, .jpg, .jpeg)",
+      type: "error",
+    };
+  }
+
+  // numbers
+  for (let i = 0; i < user.phone.length; i++) {
+    const phone = user.phone[i].number;
+
+    if (!validatePhone(phone)) {
+      formMsg[`phone_${i}`] = {
+        msg: "Please add a valid phone number",
+        type: "error",
+      };
+    }
+  }
+
+  // addresses
+  for (let i = 0; i < user.address.length; i++) {
+    const address = user.address[i].address;
+
+    if (!validateAddress(address)) {
+      formMsg[`address_${i}`] = {
+        msg: "Address must be between 3 to 256 characters!",
+        type: "error",
+      };
+    }
+  }
+
+  return formMsg;
+}
+
 function validateName(name) {
   if (!name) return false;
   return name.length >= 3 && name.length <= 100;
@@ -250,4 +445,6 @@ function validateAddress(address) {
 module.exports = {
   login,
   register,
+  deleteUser,
+  updateUser,
 };

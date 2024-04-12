@@ -6,6 +6,7 @@ const Schema = {
   properties: {
     _id: { type: "string" },
     name: { type: "string" },
+    disabled: { type: "boolean" },
     image: { type: "string" },
     address: {
       type: "array",

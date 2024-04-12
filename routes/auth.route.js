@@ -3,10 +3,10 @@ const router = express.Router();
 const controller = require("../controllers/auth.controller");
 const multer = require("../packages/node_modules/multer");
 const path = require("path");
+const AuthMiddleware = require("../middle-wares/AuthMiddleware ");
 
 // Set up multer for file upload
 const storage = multer.diskStorage({
-  // `${Date.now()}_${file.originalname}_${path.extname(file.originalname)}`
   destination: (req, file, cb) => {
     cb(null, "uploads/");
   },
@@ -17,7 +17,14 @@ const storage = multer.diskStorage({
 const upload = multer({ storage });
 
 router.post("/login", controller.login);
-// router.post("/logout", controller.logout);
 router.post("/register", upload.single("profileImage"), controller.register);
+
+router.put(
+  "/user/:userId",
+  AuthMiddleware.isAdmin,
+  upload.single("profileImage"),
+  controller.updateUser
+);
+router.delete("/user/:userId", AuthMiddleware.isAdmin, controller.deleteUser);
 
 module.exports = router;
