@@ -3,7 +3,6 @@ const router = express.Router();
 const controller = require("../controllers/controller.ticket");
 
 
-router.get("/", controller.getAllTickets);
 router.get("/:email", controller.getUserTickets);
 
 router.post("/", controller.addNewTicket);

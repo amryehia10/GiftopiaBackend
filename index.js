@@ -14,6 +14,7 @@ app.use("/uploads", express.static("uploads"));
 
 database.connection.on("open", () => {
   console.log("Open");
+  app.use("/admin", Routes.AdminRoute);
   app.use("/auth", Routes.AuthRoute);
   app.use("/cart", Routes.CartRoute);
   app.use("/user", Routes.UserRoute);
