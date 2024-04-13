@@ -80,7 +80,7 @@ let changeOrderStatus = async (req, res) => {
   try {
     let args = req.body;
     console.log(args)
-    if (validator(args)) {
+    // if (validator(args)) {
       let result = await model.findOneAndUpdate(
         { _id: req.params.id, status: { $nin: ["cancel", "closed", "success"] } },
         { status: args.status },
@@ -90,7 +90,7 @@ let changeOrderStatus = async (req, res) => {
       result ?
         res.status(200).json({ status: "success", msg: "Order Status Updated Successfully" })
         : res.status(404).json({ status: "fail", msg: "No Updates Happened fo Order" });
-    } else { res.status(404).json({ status: "fail", message: validator.errors[0].message }); }
+    // } else { res.status(404).json({ status: "fail", message: validator.errors[0].message }); }
   } catch (error) { res.status(500).json({ status: "fail", error: error.message }); }
 };
 
