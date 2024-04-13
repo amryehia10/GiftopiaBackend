@@ -35,7 +35,8 @@ let updateWishlist = async (req, res) => {
     try {
         const id = req.body.userId;
         const items = req.body.items;
-        const args = {userId:id, items: items}
+        const args = {userId:id, products: items}
+        console.log(args)
         if (validator(args)) {
             const user = await model.findOne({ userId: args.userId });
 
