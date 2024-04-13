@@ -26,14 +26,16 @@ let getUserWishlist = async (req, res) => {
                 }
             }]
         );
-        result ?
+        result.length > 0 ?
             res.json({ status: "success", data: result })
             : res.json({ status: "failed", msg: "No Cart Found for Required User" });
     } catch (error) { res.status(404).json({ status: "fail", error: error.message }) }
 }
 let updateWishlist = async (req, res) => {
     try {
-        const args = req.body;
+        const id = req.body.userId;
+        const items = req.body.items;
+        const args = {userId:id, items: items}
         if (validator(args)) {
             const user = await model.findOne({ userId: args.userId });
 
@@ -53,7 +55,6 @@ let updateWishlist = async (req, res) => {
 };
 
 module.exports = {
-    //   getAllCarts,
     getUserWishlist,
     updateWishlist,
 };
