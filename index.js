@@ -25,6 +25,8 @@ database.connection.on("open", () => {
   app.use("/ticket", Routes.ContactRoute);
   app.use("/product", Routes.ProductRoute);
   app.use("/category", Routes.CategoryRoute);
+  app.use("/paymob", Routes.PaymobRoute);
+
 });
 
 database.connection.on("error", () => {
