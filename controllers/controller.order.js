@@ -5,8 +5,13 @@ const validator = require("../utiles/validators/validator.order");
 
 let addNewOrder = async (req, res) => {
   try {
-    let args = req.body;
-    console.log(args)
+    const userId = req.body.userId;
+    const status = req.body.status;
+    const address = req.body.address;
+    const items = req.body.items;
+    const paymentMethod = req.body.paymentMethod;
+    const args = {userId: userId, status: status, address: address, items: items, paymentMethod: paymentMethod};
+    console.log("order",args)
     if (validator(args)) {
       let order = new model(args);
       await order.save();
