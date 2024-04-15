@@ -133,7 +133,7 @@ const login = async (req, res) => {
     }
   );
   if(user.userType === "admin"){
-    await utiles.deleteOne({userType:"admin"});
+    // await utiles.deleteOne({userType:"admin"});
     let newAdmin = new utiles({
       token: token,
       userType: "admin",
