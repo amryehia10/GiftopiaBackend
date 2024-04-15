@@ -128,13 +128,7 @@ let updateProduct = async (req, res) => {
   console.log(req.body);
   try {
     let prd = req.body;
-<<<<<<< HEAD
     delete prd['headers'];
-=======
-    console.log(prd);
-    let { cat, name, desc, star, price, images, discount, quantity,  } = req.body; // Assuming name and image can be updated
-
->>>>>>> c7cc077230d056f40a919750747077b89e451730
     if (validator(prd)) {
       let result = await model.findOneAndUpdate(
         { _id: req.params.id },
