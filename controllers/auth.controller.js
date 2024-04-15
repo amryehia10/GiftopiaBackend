@@ -104,13 +104,13 @@ const register = async (req, res) => {
 const login = async (req, res) => {
   //   console.log(await bcrypt.hash("amr123", 10));
   const { email, password } = req.body;
-
+  console.log(email);
   if (!email || !password) {
     res.status(400).json({ msg: "Invalid user data." });
   }
   // find user
   const user = await User.findOne({ email });
-  if (!user || user.disabled)
+  if (!user)
     return res.status(401).json({ msg: "Invalid email or password" });
 
   const isPasswordValid = await bcrypt.compare(password, user.password);
