@@ -1,8 +1,8 @@
 const User = require("../models/user.model");
-const mongoose = require("../packages/node_modules/mongoose");
-const jwt = require("../packages/node_modules/jsonwebtoken");
+const mongoose = require("../node_modules/mongoose");
+const jwt = require("../node_modules/jsonwebtoken");
 const validator = require("../utiles/validators/user.validator");
-const bcrypt = require("../packages/node_modules/bcrypt");
+const bcrypt = require("../node_modules/bcrypt");
 
 const { JWT: JWTCongig } = require("../config.json");
 

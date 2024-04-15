@@ -1,7 +1,7 @@
 const Routes = require("./utiles/handler.routes");
 const database = require("./utiles/handler.database");
-const express = require("./packages/node_modules/express");
-const cors = require("./packages/node_modules/cors");
+const express = require("./node_modules/express");
+const cors = require("./node_modules/cors");
 const AuthMiddleware = require("./middle-wares/AuthMiddleware ");
 
 const port = process.env.port || 7050;
@@ -25,6 +25,8 @@ database.connection.on("open", () => {
   app.use("/ticket", Routes.ContactRoute);
   app.use("/product", Routes.ProductRoute);
   app.use("/category", Routes.CategoryRoute);
+  app.use("/paymob", Routes.PaymobRoute);
+
 });
 
 database.connection.on("error", () => {

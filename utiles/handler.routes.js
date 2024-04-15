@@ -8,6 +8,8 @@ const ContactRoute = require("../routes/route.ticket");
 const ProductRoute = require("../routes/route.product");
 const CategoryRoute = require("../routes/route.category");
 const WishlistRoute = require("../routes/route.wishlist");
+const PaymobRoute = require("../routes/paymob.routes");
+
 module.exports = {
   AdminRoute,
   AuthRoute,
@@ -19,4 +21,5 @@ module.exports = {
   ProductRoute,
   CategoryRoute,
   WishlistRoute,
+  PaymobRoute
 };

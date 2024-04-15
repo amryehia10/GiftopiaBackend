@@ -1,4 +1,7 @@
-const express = require('../packages/node_modules/express');
+const adminMiddleware = require('../middle-wares/middle-ware.admin');
+const isAdmin = require('../middle-wares/AuthMiddleware ').isAdmin;
+const express = require('../node_modules/express');
+
 const router = express.Router();
 const user = require("../controllers/controller.user");
 const admin = require("../controllers/admin.controller");
@@ -8,39 +11,39 @@ const product = require("../controllers/controller.product");
 const category = require("../controllers/controller.category");
 
 //#region Dashboard
-router.get("/",admin.getDashoard);
+router.get("/", adminMiddleware, admin.getDashoard);
 //#endregion
 
 
 //#region Category 
-router.put("/category/", category.updateCategory);
-router.post("/category/", category.addNewCategory);
-router.get("/category/", category.getAllCategories);
-router.delete("/category/:id", category.deleteCategory);
+router.put("/category/", isAdmin, category.updateCategory);
+router.post("/category/", isAdmin, category.addNewCategory);
+router.get("/category/", isAdmin, category.getAllCategories);
+router.delete("/category/:id", isAdmin, category.deleteCategory);
 //#endregion
 
 
 //#region Product 
-router.get("/product/", product.getAllProducts);
-router.post("/product/", product.addNewProduct);
-router.put("/product/:id", product.updateProduct);
-router.delete("/product/:id", product.deleteProduct);
+router.get("/product/", isAdmin, product.getAllProducts);
+router.post("/product/", isAdmin, product.addNewProduct);
+router.put("/product/:id", isAdmin, product.updateProduct);
+router.delete("/product/:id", isAdmin, product.deleteProduct);
 //#endregion
 
 
 //#region Order 
-router.get("/order", order.getAllOrders);
-router.put("/order/:id", order.changeOrderStatus);
+router.get("/order", isAdmin, order.getAllOrders);
+router.put("/order/:id", isAdmin, order.changeOrderStatus);
 //#endregion
 
 
 //#region User 
-router.get("/user/", user.getAllUsers);
+router.get("/user/", isAdmin, user.getAllUsers);
 //#endregion
 
 
 //#region Ticket 
-router.get("/ticket/", ticket.getAllTickets);
+router.get("/ticket/", isAdmin, ticket.getAllTickets);
 //#endregion
 
 
