@@ -1,5 +1,5 @@
 const User = require("../models/user.model");
-const utiles = require("../models/utils.model");
+const utiles = require("../models/model.utils");
 const mongoose = require("../node_modules/mongoose");
 const jwt = require("../node_modules/jsonwebtoken");
 const validator = require("../utiles/validators/user.validator");
