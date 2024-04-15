@@ -1,7 +1,6 @@
-const express = require('../node_modules/express');
+const express = require("../node_modules/express");
 const router = express.Router();
 const controller = require("../controllers/controller.category");
-
 
 router.get("/", controller.getAllCategories);
 router.get("/:id", controller.getCategoryByID);
