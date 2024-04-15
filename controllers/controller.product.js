@@ -104,6 +104,7 @@ let getProductsByCategory = async (req, res) => {
 let addNewProduct = async (req, res) => {
   try {
     let args = req.body;
+    delete args['headers'];;
     if (validator(args)) {
       let prd = new model(args);
       prd.save();
@@ -127,21 +128,12 @@ let updateProduct = async (req, res) => {
   console.log(req.body);
   try {
     let prd = req.body;
+    delete prd['headers'];
     if (validator(prd)) {
       let result = await model.findOneAndUpdate(
         { _id: req.params.id },
-        {
-          cat: prd.cat,
-          name: prd.name,
-          desc: prd.desc,
-          star: prd.star,
-          price: prd.price,
-          images: prd.images,
-          discount: prd.discount,
-          numberOfRates: prd.numberOfRates,
-          numberOfSellings: prd.numberOfSellings,
-          quantity: prd.quantity,
-        },
+          prd
+        ,
         { new: true }
       );
       console.log(result);
