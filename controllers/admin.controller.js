@@ -10,8 +10,8 @@ let getDashoard = async (req, res) => {
     let orders = await order.find({}).count();
     let tickets = await ticket.find({}).count();
     let products = await product.find({}).count();
-    let token = await utils.find({ userType: "admin" });
     let categories = await category.find({}).count();
+    let token = await utils.find({ userType: "admin" });
     res.json({ token, products, categories, orders, tickets, users });
 }
 

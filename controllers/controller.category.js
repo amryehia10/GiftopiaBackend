@@ -46,8 +46,8 @@ let getAllCategories = async (req, res) => {
     result
       ? res.status(200).json({ status: "success", data: result })
       : res
-          .status(200)
-          .json({ status: "success", message: "No Categories Found" });
+        .status(200)
+        .json({ status: "success", message: "No Categories Found" });
   } catch (error) {
     res.status(404).json({ status: "fail", error: error.message });
   }
@@ -59,8 +59,8 @@ let getCategoryByID = async (req, res) => {
     result
       ? res.status(200).json({ status: "success", data: result })
       : res
-          .status(200)
-          .json({ status: "success", message: "No Category Found" });
+        .status(200)
+        .json({ status: "success", message: "No Category Found" });
   } catch (error) {
     res.status(404).json({ status: "fail", error: error.message });
   }
@@ -68,10 +68,10 @@ let getCategoryByID = async (req, res) => {
 
 let addNewCategory = async (req, res) => {
   try {
-    let args = req.body;
-    console.log(args);
-    if (validator(args)) {
-      let cat = new model(args);
+    let { name, image } = req.body; // Assuming name and image can be updated
+    console.log({ name, image });
+    if (validator({ name, image })) {
+      let cat = new model({ name, image });
       await cat.save();
       res.status(200).json({
         status: "success",
@@ -136,14 +136,14 @@ let deleteCategory = async (req, res) => {
     let cat = await model.deleteOne({ _id: req.params.id });
     cat.deletedCount
       ? res.status(200).json({
-          status: "success",
-          message: "Category is deleted successfully",
-          data: cat,
-        })
+        status: "success",
+        message: "Category is deleted successfully",
+        data: cat,
+      })
       : res.json({
-          status: "failed",
-          msg: `No Category found with id: ${req.params.id}`,
-        });
+        status: "failed",
+        msg: `No Category found with id: ${req.params.id}`,
+      });
   } catch (error) {
     res.status(404).json({ status: "fail", error: error.message });
   }
