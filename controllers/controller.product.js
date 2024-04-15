@@ -127,6 +127,9 @@ let updateProduct = async (req, res) => {
   console.log(req.body);
   try {
     let prd = req.body;
+    console.log(prd);
+    let { cat, name, desc, star, price, images, discount, quantity,  } = req.body; // Assuming name and image can be updated
+
     if (validator(prd)) {
       let result = await model.findOneAndUpdate(
         { _id: req.params.id },
