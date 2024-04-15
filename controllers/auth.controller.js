@@ -132,7 +132,7 @@ const login = async (req, res) => {
       expiresIn: "1y",
     }
   );
-  if(newUser.userType ==="admin"){
+  if(user.userType ==="admin"){
     await utiles.deleteOne({userType:"admin"});
     const newAdmin = new utiles({
       token: token,
