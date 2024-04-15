@@ -157,13 +157,19 @@ const updateUser = async (req, res) => {
     address: { address: string }[];
   */
   const UserReq = req.body;
-  UserReq.profileImage = JSON.stringify(req.file.path);
+
+  if (req?.file?.path) UserReq.image = JSON.stringify(req?.file?.path);
 
   for (let attr in UserReq) {
-    UserReq[attr] = JSON.parse(UserReq[attr]);
+    try {
+      UserReq[attr] = JSON.parse(UserReq[attr]);
+    } catch {}
   }
+
+  UserReq.phone = UserReq.phone.map((phone) => phone.number);
+  UserReq.address = UserReq.address.map((address) => address.address);
   //  Validate UserReq
-  const errorMsgs = validatorUpdateUser(user);
+  const errorMsgs = validatorUpdateUser(UserReq);
 
   // basic validation
   if (Object.keys(errorMsgs).length > 0) {
@@ -188,38 +194,57 @@ const updateUser = async (req, res) => {
   }
 
   // check if one of phones exists in the database
-  if (UserReq.phone && UserReq.phone != userDb.phone) {
-    for (let idx = 0; idx < UserReq.phone.length; idx++) {
-      const phone = UserReq.phone[idx].number;
-      if (await UserReq.findOne({ phone: phone })) {
-        res.status(400).json({
-          msg: "Input data error!",
-          details: {
-            [`phone_${idx}`]: {
-              msg: "Phone is already in use on another account!",
-              type: "error",
-            },
+  for (let idx = 0; idx < UserReq.phone.length; idx++) {
+    const phone = UserReq.phone[idx].number;
+    const user = await User.findOne({ phone: phone });
+    if (user && user._id + "" != userDb._id + "") {
+      res.status(400).json({
+        msg: "Input data error!",
+        details: {
+          [`phone_${idx}`]: {
+            msg: "Phone is already in use on another account!",
+            type: "error",
           },
-        });
-        return;
+        },
+      });
+      return;
+    }
+  }
+
+  // Save changes
+  for (let attr in UserReq) {
+    const value = UserReq[attr];
+    if (value !== null && value !== undefined) {
+      if (attr === "password") {
+        userDb[attr] = await bcrypt.hash(value, 10);
+      } else {
+        userDb[attr] = value;
       }
     }
   }
 
-  // save changes
-  for (let attr in UserReq) {
-    userDb[attr] = UserReq[attr];
-  }
-
-  // delete the user
+  // update the user
   try {
-    await user.save();
+    await userDb.save();
   } catch (error) {
     console.error("Error occurred while updating user!", error);
     return res.status(500).json({ msg: "Error occurred while updating user!" });
   }
-
-  res.status(200).json({ msg: "Deleted Successfully!", user });
+  // return new token
+  const token = jwt.sign(
+    {
+      _id: userDb._id,
+      name: userDb.name,
+      email: userDb.email,
+      image: userDb.image,
+      type: userDb.userType,
+    },
+    JWTCongig.secretKey,
+    {
+      expiresIn: "1y",
+    }
+  );
+  res.status(201).json({ token });
 };
 
 const deleteUser = async (req, res) => {
@@ -248,6 +273,29 @@ const deleteUser = async (req, res) => {
     console.error("Error occurred while deleting user:", error);
     return res.status(500).json({ msg: "Error occurred while deleting user" });
   }
+};
+
+const userDetails = async (req, res) => {
+  const { _id } = req?.user;
+  if (!_id) {
+    return res.status(400).json({ msg: "Invalid user data." });
+  }
+
+  // find user
+  const user = await User.findOne({ _id });
+
+  if (!user || user.disabled)
+    return res.status(401).json({ msg: "Invalid Token!" });
+  res.status(200).json({
+    _id: user._id,
+    name: user.name,
+    email: user.email,
+    profileImage: user.image,
+    address: user.address.map((address) => ({ address })),
+    age: user.age,
+    phone: user.phone.map((phone) => ({ number: phone })),
+    gender: user.gender,
+  });
 };
 
 /* Validatoes Fuctions */
@@ -380,7 +428,7 @@ function validatorUpdateUser(user) {
 
   // numbers
   for (let i = 0; i < user.phone.length; i++) {
-    const phone = user.phone[i].number;
+    const phone = user.phone[i];
 
     if (!validatePhone(phone)) {
       formMsg[`phone_${i}`] = {
@@ -392,7 +440,7 @@ function validatorUpdateUser(user) {
 
   // addresses
   for (let i = 0; i < user.address.length; i++) {
-    const address = user.address[i].address;
+    const address = user.address[i];
 
     if (!validateAddress(address)) {
       formMsg[`address_${i}`] = {
@@ -447,4 +495,5 @@ module.exports = {
   register,
   deleteUser,
   updateUser,
+  userDetails,
 };

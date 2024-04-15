@@ -19,12 +19,18 @@ const upload = multer({ storage });
 router.post("/login", controller.login);
 router.post("/register", upload.single("profileImage"), controller.register);
 
+router.get("/userDetails", AuthMiddleware.verifyToken, controller.userDetails);
+
 router.put(
   "/user/:userId",
-  AuthMiddleware.isAdmin,
+  AuthMiddleware.verifyToken,
   upload.single("profileImage"),
   controller.updateUser
 );
-router.delete("/user/:userId", AuthMiddleware.isAdmin, controller.deleteUser);
+router.delete(
+  "/user/:userId",
+  AuthMiddleware.verifyToken,
+  controller.deleteUser
+);
 
 module.exports = router;
