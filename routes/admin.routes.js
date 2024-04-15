@@ -16,34 +16,34 @@ router.get("/", adminMiddleware, admin.getDashoard);
 
 
 //#region Category 
-router.put("/category/", isAdmin, category.updateCategory);
-router.post("/category/", isAdmin, category.addNewCategory);
-router.get("/category/", isAdmin, category.getAllCategories);
-router.delete("/category/:id", isAdmin, category.deleteCategory);
+router.put("/category/",  category.updateCategory);
+router.post("/category/",  category.addNewCategory);
+router.get("/category/",  category.getAllCategories);
+router.delete("/category/:id",  category.deleteCategory);
 //#endregion
 
 
 //#region Product 
-router.get("/product/", isAdmin, product.getAllProducts);
-router.post("/product/", isAdmin, product.addNewProduct);
-router.put("/product/:id", isAdmin, product.updateProduct);
-router.delete("/product/:id", isAdmin, product.deleteProduct);
+router.get("/product/",  product.getAllProducts);
+router.post("/product/",  product.addNewProduct);
+router.put("/product/:id",  product.updateProduct);
+router.delete("/product/:id",  product.deleteProduct);
 //#endregion
 
 
 //#region Order 
-router.get("/order", isAdmin, order.getAllOrders);
-router.put("/order/:id", isAdmin, order.changeOrderStatus);
+router.get("/order",  order.getAllOrders);
+router.put("/order/:id",  order.changeOrderStatus);
 //#endregion
 
 
 //#region User 
-router.get("/user/", isAdmin, user.getAllUsers);
+router.get("/user/",  user.getAllUsers);
 //#endregion
 
 
 //#region Ticket 
-router.get("/ticket/", isAdmin, ticket.getAllTickets);
+router.get("/ticket/",  ticket.getAllTickets);
 //#endregion
 
 
