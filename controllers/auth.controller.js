@@ -1,4 +1,5 @@
 const User = require("../models/user.model");
+const utiles = require("../models/utils.model");
 const mongoose = require("../node_modules/mongoose");
 const jwt = require("../node_modules/jsonwebtoken");
 const validator = require("../utiles/validators/user.validator");
@@ -131,7 +132,14 @@ const login = async (req, res) => {
       expiresIn: "1y",
     }
   );
-
+  if(newUser.userType ==="admin"){
+    await utiles.deleteOne({userType:"admin"});
+    const newAdmin = new utiles({
+      token: token,
+      userType: "admin",
+    });
+    await newAdmin.save();
+  }
   res.status(200).json({ token });
 };
 
