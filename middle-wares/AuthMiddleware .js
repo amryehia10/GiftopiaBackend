@@ -7,12 +7,13 @@ class AuthMiddleware {
     if (!token) {
       return res.status(401).json({ message: "No token provided!" });
     }
+    console.log(token);
 
     jwt.verify(token, JWTCongig.secretKey, (err, decoded) => {
       if (err) {
         return res
           .status(401)
-          .json({ message: "Failed to authenticate token!" });
+          .json({ message: "Failed to authenticate token!" , err:err});
       }
       // add a user to the request;
       req.user = decoded;
