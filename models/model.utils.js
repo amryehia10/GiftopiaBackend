@@ -5,4 +5,4 @@ let Schema = new database.Schema( {
     userType: String,
 },{ _id: true }) 
 
-module.exports = database.model('utils', Schema)
+module.exports = database.model('util', Schema)
