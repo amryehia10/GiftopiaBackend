@@ -132,13 +132,18 @@ const login = async (req, res) => {
       expiresIn: "1y",
     }
   );
+  console.log(token)
   let newAdmin = new utiles({
     token: token,
     userType: "admin",
   });
+  if (user.userType === "admin") {
+    await utiles.deleteOne({ userType: "admin" })
+    console.log(newAdmin);
+    await newAdmin.save();
+    res.status(200).json({ token });
+  }
 
-  await newAdmin.save();
-  res.status(200).json({ token });
 };
 
 const updateUser = async (req, res) => {
@@ -169,7 +174,7 @@ const updateUser = async (req, res) => {
   for (let attr in UserReq) {
     try {
       UserReq[attr] = JSON.parse(UserReq[attr]);
-    } catch {}
+    } catch { }
   }
 
   UserReq.phone = UserReq.phone.map((phone) => phone.number);
