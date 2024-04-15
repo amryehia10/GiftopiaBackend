@@ -10,7 +10,7 @@ const product = require("../controllers/controller.product");
 const category = require("../controllers/controller.category");
 
 //#region Dashboard
-router.get("/", isAdmin, admin.getDashoard);
+router.get("/", admin.getDashoard);
 //#endregion
 
 
