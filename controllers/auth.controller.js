@@ -105,44 +105,46 @@ const register = async (req, res) => {
 const login = async (req, res) => {
   //   console.log(await bcrypt.hash("amr123", 10));
   const { email, password } = req.body;
-  console.log(email);
   if (!email || !password) {
     res.status(400).json({ msg: "Invalid user data." });
   }
   // find user
   const user = await User.findOne({ email });
   if (!user)
-    return res.status(401).json({ msg: "Invalid email or password" });
+  return res.status(401).json({ msg: "Invalid email or password" });
 
-  const isPasswordValid = await bcrypt.compare(password, user.password);
+const isPasswordValid = await bcrypt.compare(password, user.password);
 
-  if (!isPasswordValid)
-    return res.status(401).json({ msg: "Invalid email or password" });
+if (!isPasswordValid)
+return res.status(401).json({ msg: "Invalid email or password" });
 
-  const token = jwt.sign(
-    {
-      _id: user._id,
-      name: user.name,
-      email: user.email,
-      image: user.image,
-      userType: user.userType,
-    },
-    JWTCongig.secretKey,
-    {
-      expiresIn: "1y",
-    }
-  );
-  console.log(token)
-  let newAdmin = new utiles({
-    token: token,
-    userType: "admin",
-  });
-  if (user.userType === "admin") {
-    await utiles.deleteOne({ userType: "admin" })
-    console.log(newAdmin);
-    await newAdmin.save();
-    res.status(200).json({ token });
+const token = jwt.sign(
+  {
+    _id: user._id,
+    name: user.name,
+    email: user.email,
+    image: user.image,
+    userType: user.userType,
+  },
+  JWTCongig.secretKey,
+  {
+    expiresIn: "1y",
   }
+);
+console.log(token)
+let newAdmin = new utiles({
+  token: token,
+  userType: "admin",
+});
+if (user.userType === "admin") {
+  await utiles.deleteOne({ userType: "admin" })
+  console.log(newAdmin);
+  await newAdmin.save();
+  res.status(200).json({ token });
+} else  {
+  res.status(200).json({ token });
+
+}
 
 };
 
