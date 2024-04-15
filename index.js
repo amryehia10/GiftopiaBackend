@@ -30,7 +30,7 @@ database.connection.on("open", () => {
 });
 
 database.connection.on("error", () => {
-  console.log("Error Happened");
+  console.log("Error Happened:)");
 });
 
 app.listen(port, () => console.log(`Running on: http://localhost:${port}`));
